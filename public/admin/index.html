@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bobyka | Panel de pedidos</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Poppins,sans-serif;background:#f5e6e0;color:#1a1a1a}
+.top{background:#fff;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 12px #0001}.logo{font:2rem Pacifico}.logo span{color:#d4a0a0}
+.wrap{max-width:1400px;margin:2rem auto;padding:0 1rem}.login{max-width:420px;margin:8vh auto;background:#fff;padding:2rem;border-radius:24px;box-shadow:0 10px 30px #0001}
+h1{font:2.2rem Pacifico;margin:.2rem 0 1.5rem}input,select{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-radius:10px;font:inherit;margin:.4rem 0 1rem}.btn{border:0;background:#1a1a1a;color:#fff;border-radius:12px;padding:.8rem 1.2rem;font-weight:700;cursor:pointer}.btn:hover{background:#d4a0a0}.error{background:#ffe2e2;padding:.8rem;border-radius:10px;margin-bottom:1rem}
+#app{display:none}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:1rem 0}.stat{background:#fff;border-radius:18px;padding:1.2rem;box-shadow:0 5px 20px #0001}.stat b{font-size:1.8rem;display:block}.toolbar{background:#fff;padding:1rem;border-radius:18px;display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}.toolbar input,.toolbar select{margin:0;width:auto}
+.table-wrap{background:#fff;border-radius:18px;overflow:auto;box-shadow:0 5px 20px #0001}.table{width:100%;border-collapse:collapse;min-width:1050px}.table th,.table td{padding:.9rem;border-bottom:1px solid #eee;text-align:left;vertical-align:top}.table th{background:#fdf5f2}.badge{display:inline-block;padding:.25rem .6rem;border-radius:999px;font-size:.8rem;font-weight:700}.approved,.recibido,.listo,.entregado{background:#d9f4df}.pendiente{background:#fff0c7}.rechazado,.cancelado{background:#ffdede}.actions{display:flex;gap:.4rem;flex-wrap:wrap}.actions button{font-size:.78rem;padding:.5rem .7rem}.muted{color:#777;font-size:.82rem}.design-link{color:#9c6666;font-weight:700;text-decoration:none}.empty{text-align:center;padding:3rem;color:#777}
+@media(max-width:800px){.stats{grid-template-columns:1fr 1fr}.toolbar input,.toolbar select{width:100%}}
+</style>
+</head>
+<body>
+<div class="top"><div class="logo">Boby<span>ka</span> ♥</div><button class="btn" id="logout" style="display:none">Salir</button></div>
+
+<div id="loginView" class="login">
+<h1>Panel Bobyka</h1>
+<p style="color:#777">Ingresá para ver y gestionar los pedidos.</p>
+<div id="loginError" class="error" style="display:none"></div>
+<label>Usuario</label><input id="user" autocomplete="username">
+<label>Contraseña</label><input id="pass" type="password" autocomplete="current-password">
+<button class="btn" style="width:100%" onclick="login()">Entrar</button>
+</div>
+
+<div id="app" class="wrap">
+<h1>Pedidos</h1>
+<div class="stats">
+ <div class="stat">Total<b id="sTotal">0</b></div>
+ <div class="stat">Pagados<b id="sPaid">0</b></div>
+ <div class="stat">Pendientes<b id="sPending">0</b></div>
+ <div class="stat">Facturado<b id="sMoney">$0</b></div>
+</div>
+<div class="toolbar">
+ <select id="filterStatus" onchange="loadOrders()"><option value="">Todos los estados</option><option value="pendiente">Pendiente</option><option value="recibido">Recibido</option><option value="en_produccion">En producción</option><option value="listo">Listo</option><option value="entregado">Entregado</option><option value="cancelado">Cancelado</option></select>
+ <input id="search" placeholder="Buscar nombre, email o producto" oninput="render()">
+ <button class="btn" onclick="loadOrders()">Actualizar</button>
+</div>
+<div class="table-wrap"><table class="table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Producto</th><th>Cant.</th><th>Total</th><th>Pago</th><th>Pedido</th><th>Diseño</th><th>Acciones</th></tr></thead><tbody id="rows"></tbody></table></div>
+</div>
+
+<script>
+let orders=[];
+const money=n=>Number(n||0).toLocaleString('es-UY');
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+
+async function api(url,opt={}){
+ const r=await fetch(url,opt);
+ if(r.status===401){showLogin();throw new Error('Sesión vencida')}
+ const d=await r.json().catch(()=>({}));
+ if(!r.ok)throw new Error(d.error||'Error');
+ return d;
+}
+async function login(){
+ const error=document.getElementById('loginError');
+ error.style.display='none';
+ try{
+  await api('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:document.getElementById('user').value,pass:document.getElementById('pass').value})});
+  showApp(); loadOrders();
+ }catch(e){error.textContent=e.message;error.style.display='block'}
+}
+async function check(){
+ try{await api('/api/admin/me');showApp();loadOrders()}catch(e){showLogin()}
+}
+function showApp(){document.getElementById('loginView').style.display='none';document.getElementById('app').style.display='block';document.getElementById('logout').style.display='block'}
+function showLogin(){document.getElementById('loginView').style.display='block';document.getElementById('app').style.display='none';document.getElementById('logout').style.display='none'}
+document.getElementById('logout').onclick=async()=>{await api('/api/admin/logout',{method:'POST'});showLogin()}
+async function loadOrders(){
+ try{
+  const st=document.getElementById('filterStatus').value;
+  const d=await api('/api/admin/orders'+(st?'?status='+encodeURIComponent(st):''));
+  orders=d.orders||[]; updateStats(); render();
+ }catch(e){if(e.message!=='Sesión vencida')alert(e.message)}
+}
+function updateStats(){
+ document.getElementById('sTotal').textContent=orders.length;
+ document.getElementById('sPaid').textContent=orders.filter(o=>o.estado_pago==='aprobado').length;
+ document.getElementById('sPending').textContent=orders.filter(o=>o.estado_pago!=='aprobado').length;
+ document.getElementById('sMoney').textContent='$'+money(orders.filter(o=>o.estado_pago==='aprobado').reduce((a,o)=>a+Number(o.total),0));
+}
+function badge(s){return `<span class="badge ${esc(s)}">${esc((s||'').replaceAll('_',' '))}</span>`}
+function render(){
+ const q=document.getElementById('search').value.toLowerCase();
+ const list=orders.filter(o=>`${o.nombre} ${o.email} ${o.producto} ${o.id}`.toLowerCase().includes(q));
+ const rows=document.getElementById('rows');
+ if(!list.length){rows.innerHTML='<tr><td colspan="9" class="empty">No hay pedidos para mostrar.</td></tr>';return}
+ rows.innerHTML=list.map(o=>`<tr>
+ <td><strong>${esc(o.id.slice(0,8))}</strong><div class="muted">${new Date(o.created_at).toLocaleString('es-UY')}</div></td>
+ <td><strong>${esc(o.nombre)}</strong><div class="muted">${esc(o.email)}<br>${esc(o.telefono||'')}</div></td>
+ <td>${esc(o.producto)}${o.talle?`<div class="muted">Talle: ${esc(o.talle)}</div>`:''}${o.detalles?`<div class="muted">${esc(o.detalles)}</div>`:''}</td>
+ <td>${esc(o.cantidad)}</td><td><strong>$${money(o.total)}</strong></td>
+ <td>${badge(o.estado_pago)}${o.pago_id?`<div class="muted">MP: ${esc(o.pago_id)}</div>`:''}</td>
+ <td>${badge(o.estado_pedido)}</td>
+ <td>${o.archivo_path?`<a class="design-link" href="/api/admin/orders/${encodeURIComponent(o.id)}/design" target="_blank">Descargar</a>`:'-'}</td>
+ <td><div class="actions">
+ <button class="btn" onclick="setStatus('${o.id}','recibido')">Recibido</button>
+ <button class="btn" onclick="setStatus('${o.id}','en_produccion')">Producción</button>
+ <button class="btn" onclick="setStatus('${o.id}','listo')">Listo</button>
+ <button class="btn" onclick="setStatus('${o.id}','entregado')">Entregado</button>
+ <button class="btn" onclick="setStatus('${o.id}','cancelado')">Cancelar</button>
+ </div></td></tr>`).join('');
+}
+async function setStatus(id,status){
+ try{await api('/api/admin/orders/'+encodeURIComponent(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({estado_pedido:status})});await loadOrders()}catch(e){alert(e.message)}
+}
+check();
+</script>
+</body>
+</html>
