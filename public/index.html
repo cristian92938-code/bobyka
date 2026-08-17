@@ -49,14 +49,122 @@ input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-r
 .whatsapp-float:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(212,160,160,.6);background:#1a1a1a}
 .whatsapp-float svg{width:32px;height:32px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
+/* RESPONSIVE MEJORADO PARA MÓVIL */
 @media(max-width:800px){
-    .category-buttons{grid-template-columns:1fr 1fr;position:relative;bottom:auto;transform:none;margin-top:1rem;padding:0;width:100%}
-    .category-image{border-radius:18px}
-    .form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}
-    .hero h1{font-size:2.5rem}
-    nav a{margin-left:.7rem;font-size:.85rem}
-    .whatsapp-float{bottom:20px;right:20px;width:50px;height:50px}
-    .whatsapp-float svg{width:26px;height:26px}
+    /* Header compacto */
+    header{padding:0.8rem 1rem}
+    .logo{font-size:1.5rem}
+    nav a{margin-left:0.7rem;font-size:.85rem}
+    
+    /* Hero más compacto */
+    .hero{padding:3rem 1rem}
+    .hero h1{font-size:2.2rem}
+    .tagline{font-size:1rem}
+    
+    /* Categorías en una columna */
+    .categories{padding:2rem 1rem 4rem}
+    .categories h2{font-size:1.8rem;margin-bottom:1.5rem}
+    .category-wrapper{max-width:100%}
+    .category-image{border-radius:15px}
+    
+    /* Botones debajo de la imagen, uno debajo del otro en móviles muy chicos */
+    .category-buttons{
+        position:relative;
+        bottom:auto;
+        left:auto;
+        transform:none;
+        margin-top:1.5rem;
+        padding:0;
+        width:100%;
+        grid-template-columns:1fr 1fr;
+        gap:0.8rem
+    }
+    
+    .category-btn{
+        padding:0.9rem;
+        font-size:0.9rem;
+        border-radius:40px
+    }
+    
+    /* Modal optimizado para móvil */
+    .modal{padding:0.5rem}
+    .modal-content{
+        padding:1.5rem;
+        border-radius:18px;
+        max-height:95vh
+    }
+    .modal h3{font-size:1.5rem}
+    .modal-price{font-size:1.2rem}
+    #productIcon{font-size:3rem}
+    
+    /* Formulario en una columna */
+    .form-grid{grid-template-columns:1fr;gap:0.8rem}
+    .field{margin-top:0.8rem}
+    .field.full{grid-column:auto}
+    
+    input,select,textarea{
+        padding:0.7rem;
+        font-size:0.9rem
+    }
+    
+    /* Botones de cantidad más chicos */
+    .quantity button{
+        width:35px;
+        height:35px;
+        font-size:1.1rem
+    }
+    
+    /* Info box más compacta */
+    .info-box{
+        padding:0.8rem;
+        font-size:0.85rem
+    }
+    .info-box strong{font-size:0.9rem}
+    
+    /* Total y botones */
+    .total{font-size:1rem;padding:0.8rem}
+    .btn{
+        padding:0.9rem 1.5rem;
+        font-size:0.95rem
+    }
+    .btn-wa{
+        padding:0.9rem 1.5rem;
+        font-size:0.95rem
+    }
+    
+    /* Status de pasos */
+    .status{
+        padding:1rem;
+        font-size:0.9rem
+    }
+    .status h4{font-size:1.1rem}
+    .status p{font-size:0.85rem}
+    
+    /* WhatsApp flotante más chico */
+    .whatsapp-float{
+        bottom:20px;
+        right:20px;
+        width:50px;
+        height:50px
+    }
+    .whatsapp-float svg{
+        width:26px;
+        height:26px
+    }
+}
+
+/* Para celulares muy chicos (menos de 480px) */
+@media(max-width:480px){
+    .category-buttons{
+        grid-template-columns:1fr
+    }
+    .category-btn{
+        padding:1rem;
+        font-size:1rem
+    }
+    .hero h1{font-size:1.8rem}
+    .modal-content{padding:1.2rem}
+    .close{font-size:1.5rem;top:0.5rem;right:1rem}
 }
 </style>
 </head>
@@ -81,9 +189,9 @@ input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-r
     <img class="category-image" src="bobyka-categorias.png" alt="Categorías Bobyka" onerror="this.style.display='none'">
     <div class="category-buttons">
       <button class="category-btn" onclick="openProduct('Remera Sublimada',430,'👕','Algodón premium, diseño personalizado full print.')">REMERAS ♥</button>
-      <button class="category-btn" onclick="openProduct('Taza 11oz',250,'☕','Cerámica premium, sublimación full color.')">TAZAS ♥</button>
+      <button class="category-btn" onclick="openProduct('Taza 11oz',250,'','Cerámica premium, sublimación full color.')">TAZAS ♥</button>
       <button class="category-btn" onclick="openProduct('Gorra Personalizada',250,'🧢','Trucker o plana, bordado o sublimación.')">GORROS ♥</button>
-      <button class="category-btn" onclick="openProduct('Plato Decorativo',600,'️🍽️','Cerámica blanca, sublimación de alta calidad.')">PLATOS ♥</button>
+      <button class="category-btn" onclick="openProduct('Plato Decorativo',600,'🍽️','Cerámica blanca, sublimación de alta calidad.')">PLATOS ♥</button>
     </div>
   </div>
 </section>
@@ -200,7 +308,7 @@ function prepareOrder(){
                    `🔢 *Cantidad:* ${current.qty}%0A` +
                    `💰 *Total pagado:* $${money(total)}%0A` +
                    `👤 *Nombre:* ${name}%0A` +
-                   `📧 *Email:* ${email}%0A` +
+                   ` *Email:* ${email}%0A` +
                    `📱 *Teléfono:* ${phone}%0A` +
                    (current.name.includes('Remera') ? `📏 *Talle:* ${size}%0A` : '') +
                    ` *Ubicación/Medidas:* ${details || 'A coordinar'}`;
