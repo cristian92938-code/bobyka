@@ -197,38 +197,29 @@ app.post("/api/create-link", async (req, res) => {
           pending: `${baseUrl}/?pago=pending&pedido=${orderId}`
         },
         auto_return: "approved",
-        notification_url: `${baseUrl}/api/mercadopago/webhook`
+        notification_url: `${baseUrl}/api/mercadopago/webhook`,
+        metadata: {
+          phone: phone || "",
+          size: size || "",
+          details: details || "",
+          product_name: product,
+          quantity: qty,
+          customer_name: name.trim(),
+          customer_email: email.trim().toLowerCase()
+        }
       }
     });
 
     const pref = mpResponse?.response || mpResponse;
     
-    // 2. Guardar el pedido en la base de datos para que lo veas en el /admin
-    const { error: dbError } = await supabase.from("pedidos").insert({
-      id: orderId,
-      producto: product,
-      cantidad: qty,
-      precio_unitario: PRODUCTS[product],
-      total,
-      nombre: name.trim(),
-      email: email.trim().toLowerCase(),
-      telefono: phone?.trim() || null,
-      talle: product.includes("Remera") ? (size || null) : null,
-      detalles: (details?.trim() || "") + " (Diseño a enviar por WhatsApp)",
-      estado_pago: "pendiente",
-      estado_pedido: "pendiente",
-      preferencia_id: pref.id || null
-    });
-
-    if (dbError) {
-      console.error("Error guardando pedido (create-link):", dbError);
-    }
-
+    // NO guardamos en la base de datos para evitar el error de RLS
+    // El webhook se encargará de crear/actualizar cuando llegue el pago
+    
     return res.json({ order_id: orderId, init_point: pref.init_point });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ error: e.message || "No se pudo preparar el pedido." });
-    }
+  }
 });
 
 // ==========================================
