@@ -50,8 +50,11 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
     }
     
     const total = PRODUCTS[product] * qty;
-    let designUrl = null;
+    let archivoPath = null;
+    let archivoNombre = null;
+    let archivoTipo = null;
 
+    // Si el cliente subió un archivo, lo guardamos en Supabase Storage
     if (req.file) {
       const fileExt = req.file.originalname.split('.').pop();
       const fileName = `${Date.now()}-${name.replace(/\s+/g, '_')}.${fileExt}`;
@@ -70,27 +73,29 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
         return res.status(500).json({ error: 'Error al subir el diseño' });
       }
       
-      const { data: urlData } = supabase
-        .storage
-        .from('disenos')
-        .getPublicUrl(filePath);
-      
-      designUrl = urlData.publicUrl;
+      archivoPath = filePath;
+      archivoNombre = fileName;
+      archivoTipo = req.file.mimetype;
     }
 
+    // Guardar el pedido en la tabla "pedidos" con los nombres correctos
     const { data: order, error: dbError } = await supabase
-      .from('orders')
+      .from('pedidos')
       .insert([{
-        product,
-        quantity: qty,
-        total,
-        customer_name: name,
-        customer_email: email,
-        customer_phone: phone,
-        size: size || null,
-        details: details || null,
-        design_url: designUrl,
-        status: 'pending',
+        producto: product,
+        cantidad: qty,
+        precio_unitario: PRODUCTS[product],
+        total: total,
+        nombre: name,
+        email: email,
+        telefono: phone || null,
+        talle: size || null,
+        detalles: details || null,
+        archivo_path: archivoPath,
+        archivo_nombre: archivoNombre,
+        archivo_tipo: archivoTipo,
+        estado_pedido: 'pendiente',
+        estado_pago: 'pendiente',
         created_at: new Date().toISOString()
       }])
       .select()
@@ -98,9 +103,10 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
     
     if (dbError) {
       console.error('Error guardando pedido en BD:', dbError);
-      return res.status(500).json({ error: 'Error al guardar el pedido' });
+      return res.status(500).json({ error: 'Error al guardar el pedido: ' + dbError.message });
     }
 
+    // Crear la preferencia de pago en Mercado Pago
     const preferenceBody = {
       items: [{
         title: `${product} x${qty}`,
@@ -127,9 +133,13 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
       return res.status(500).json({ error: 'Error creando preferencia de pago' });
     }
 
+    // Actualizar el pedido con el link de pago
     await supabase
-      .from('orders')
-      .update({ payment_url: mpResponse.init_point })
+      .from('pedidos')
+      .update({ 
+        preferencia_id: mpResponse.id,
+        pago_id: mpResponse.init_point
+      })
       .eq('id', order.id);
 
     res.json({
@@ -140,7 +150,7 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
 
   } catch (error) {
     console.error('Error general en /api/orders:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).json({ error: 'Error interno del servidor: ' + error.message });
   }
 });
 
