@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const mercadopago = require('mercadopago');
+const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const { createClient } = require('@supabase/supabase-js');
 const multer = require('multer');
 const path = require('path');
@@ -14,10 +14,10 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } 
 });
 
-// Configuración de Mercado Pago
-mercadopago.configure({
-  access_token: process.env.MP_ACCESS_TOKEN
-});
+// Configuración de Mercado Pago (SDK v2)
+const mpClient = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+const mpPreference = new Preference(mpClient);
+const mpPayment = new Payment(mpClient);
 
 // Configuración de Supabase
 const supabase = createClient(
@@ -101,7 +101,7 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
       return res.status(500).json({ error: 'Error al guardar el pedido' });
     }
 
-    const preference = {
+    const preferenceBody = {
       items: [{
         title: `${product} x${qty}`,
         quantity: 1,
@@ -121,21 +121,20 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
       notification_url: `${process.env.PUBLIC_URL}/api/webhook`
     };
 
-    const mpResponse = await mercadopago.preferences.create(preference);
-    const mpData = mpResponse.body;
+    const mpResponse = await mpPreference.create({ body: preferenceBody });
 
-    if (!mpData.init_point) {
+    if (!mpResponse.init_point) {
       return res.status(500).json({ error: 'Error creando preferencia de pago' });
     }
 
     await supabase
       .from('orders')
-      .update({ payment_url: mpData.init_point })
+      .update({ payment_url: mpResponse.init_point })
       .eq('id', order.id);
 
     res.json({
       success: true,
-      init_point: mpData.init_point,
+      init_point: mpResponse.init_point,
       orderId: order.id
     });
 
@@ -151,8 +150,8 @@ app.post('/api/webhook', express.json(), async (req, res) => {
     const { type, data } = req.body;
     if (type === 'payment') {
       const paymentId = data.id;
-      const paymentInfo = await mercadopago.payment.findById(paymentId);
-      const status = paymentInfo.body.status;
+      const paymentInfo = await mpPayment.get({ id: paymentId });
+      const status = paymentInfo.status;
 
       if (status === 'approved') {
         console.log(`Pago aprobado! ID: ${paymentId}`);
