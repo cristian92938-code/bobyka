@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carrito - Bobyka</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,sans-serif;background:#f5e6e0;color:#1a1a1a;line-height:1.6}
+
+header{background:#fff;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(212,160,160,.2)}
+.logo{font-family:Pacifico,cursive;font-size:2rem;text-decoration:none;color:#1a1a1a}.logo span{color:#d4a0a0}
+nav a{color:#1a1a1a;text-decoration:none;margin-left:2rem;font-weight:500}
+
+.container{max-width:800px;margin:2rem auto;padding:0 1rem}
+.page-title{font-family:Pacifico,cursive;font-size:2.5rem;text-align:center;margin-bottom:2rem;color:#1a1a1a}
+
+.cart-section{background:#fff;border-radius:24px;padding:2rem;margin-bottom:2rem;box-shadow:0 4px 15px rgba(212,160,160,.15)}
+.section-title{font-family:Pacifico,cursive;font-size:1.8rem;margin-bottom:1.5rem;color:#d4a0a0}
+
+.cart-item{background:#fdf5f2;border:2px solid #e8c4c4;border-radius:12px;padding:1.2rem;margin-bottom:1rem}
+.cart-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem}
+.cart-item-name{font-weight:700;font-size:1.1rem;color:#1a1a1a}
+.cart-item-qty{background:#d4a0a0;color:#fff;padding:0.3rem 0.8rem;border-radius:20px;font-size:0.9rem}
+.cart-item-details{font-size:0.95rem;color:#555;margin:0.3rem 0}
+.cart-item-price{font-weight:700;color:#d4a0a0;font-size:1.1rem;text-align:right;margin-top:0.5rem}
+
+.total-box{background:linear-gradient(135deg,#1a1a1a,#333);color:#fff;padding:1.5rem;border-radius:15px;text-align:center;margin:1.5rem 0}
+.total-label{font-size:1rem;margin-bottom:0.5rem;opacity:0.9}
+.total-amount{font-size:2.5rem;font-weight:700;color:#d4a0a0}
+
+.payment-section{background:#fff;border-radius:24px;padding:2rem;box-shadow:0 4px 15px rgba(212,160,160,.15)}
+.bank-data{background:#fdf5f2;border:2px solid #d4a0a0;border-radius:15px;padding:1.5rem;margin:1rem 0}
+.bank-row{display:flex;justify-content:space-between;margin:0.8rem 0;align-items:center}
+.bank-label{font-weight:600;color:#555}
+.bank-value{font-weight:700;color:#1a1a1a;font-family:monospace;font-size:1.1rem}
+.copy-btn{background:#d4a0a0;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;font-size:0.85rem;transition:0.3s;margin-left:0.5rem}
+.copy-btn:hover{background:#1a1a1a;transform:translateY(-2px)}
+.copy-btn.copied{background:#25D366}
+
+.instructions{background:#fff3cd;border:2px solid #ffc107;border-radius:12px;padding:1.2rem;margin:1.5rem 0}
+.instructions h4{color:#856404;margin-bottom:0.8rem}
+.instructions ol{margin-left:1.2rem;color:#856404}
+.instructions li{margin:0.5rem 0}
+
+.btn{display:inline-block;background:#1a1a1a;color:#fff;padding:1rem 2rem;border:none;border-radius:50px;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;transition:0.3s;width:100%;margin-top:1rem}
+.btn:hover{background:#d4a0a0;transform:translateY(-2px)}
+.btn-wa{background:#25D366}
+.btn-wa:hover{background:#128C7E}
+.btn:disabled{background:#ccc;cursor:not-allowed;transform:none}
+
+.empty-cart{text-align:center;padding:3rem;color:#777}
+.empty-cart-icon{font-size:4rem;margin-bottom:1rem}
+
+.whatsapp-float{position:fixed;bottom:30px;right:30px;width:60px;height:60px;background:#d4a0a0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(212,160,160,.4);cursor:pointer;transition:all 0.3s;z-index:999;text-decoration:none}
+.whatsapp-float:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(212,160,160,.6);background:#1a1a1a}
+.whatsapp-float svg{width:32px;height:32px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+footer{background:#1a1a1a;color:#fff;text-align:center;padding:2rem;margin-top:3rem}.heart{color:#d4a0a0}
+
+@media(max-width:800px){
+    header{padding:0.8rem 1rem}
+    .logo{font-size:1.5rem}
+    nav a{margin-left:0.7rem;font-size:0.85rem}
+    .container{padding:0 0.8rem}
+    .page-title{font-size:1.8rem}
+    .cart-section,.payment-section{padding:1.5rem}
+    .total-amount{font-size:2rem}
+    .bank-row{flex-direction:column;align-items:flex-start}
+    .copy-btn{margin-left:0;margin-top:0.5rem}
+    .whatsapp-float{bottom:20px;right:20px;width:50px;height:50px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Boby<span>ka</span> ♥</a>
+  <nav>
+    <a href="/">Productos</a>
+    <a href="/#galeria">Galería</a>
+    <a href="/#contacto">Contacto</a>
+  </nav>
+</header>
+
+<div class="container">
+  <h1 class="page-title">Tu Carrito ♥</h1>
+  
+  <div id="cartContent">
+    <!-- Los items del carrito se cargan con JavaScript -->
+  </div>
+  
+  <div class="payment-section" id="paymentSection" style="display:none">
+    <h2 class="section-title">💳 Datos para Transferencia</h2>
+    
+    <div class="instructions">
+      <h4>📋 Pasos para completar tu pedido:</h4>
+      <ol>
+        <li>Realizá la transferencia bancaria con los datos de abajo</li>
+        <li>Guardá el comprobante de pago</li>
+        <li>Hacé clic en "Enviar comprobante por WhatsApp"</li>
+        <li>Adjuntá el comprobante y listo</li>
+      </ol>
+    </div>
+    
+    <div class="bank-data">
+      <div class="bank-row">
+        <span class="bank-label">🏦 Banco:</span>
+        <span class="bank-value">OCA Blue - Sucursal 9814324</span>
+      </div>
+      <div class="bank-row">
+        <span class="bank-label"> Alias:</span>
+        <span class="bank-value">bobyka.ventas</span>
+        <button class="copy-btn" onclick="copiarAlPortapapeles('bobyka.ventas', this)">Copiar</button>
+      </div>
+      <div class="bank-row">
+        <span class="bank-label"> Titular:</span>
+        <span class="bank-value">Bobyka</span>
+      </div>
+    </div>
+    
+    <div class="total-box">
+      <div class="total-label">Total a Transferir:</div>
+      <div class="total-amount">$<span id="transferTotal">0</span></div>
+    </div>
+    
+    <button class="btn btn-wa" onclick="irAWhatsApp()">
+      📱 Enviar comprobante por WhatsApp
+    </button>
+    <button class="btn" onclick="window.location.href='/'" style="margin-top:1rem;background:#ccc;color:#333">
+      ← Seguir comprando
+    </button>
+  </div>
+</div>
+
+<a href="https://wa.me/59898586123?text=Hola%20Bobyka!%20Necesito%20ayuda%20o%20tengo%20una%20consulta%20♥" class="whatsapp-float" target="_blank" title="Soporte y Ayuda">
+  <svg viewBox="0 0 24 24">
+    <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+  </svg>
+</a>
+
+<footer id="contacto">
+  Bobyka © 2026 | Hecho con <span class="heart">♥</span> en Uruguay<br>
+  <a href="terminos.html" style="color:#d4a0a0;text-decoration:none;margin:0 10px">Términos y Condiciones</a> | 
+  <a href="privacidad.html" style="color:#d4a0a0;text-decoration:none;margin:0 10px">Política de Privacidad</a>
+</footer>
+
+<script>
+const NUMERO_PEDIDOS = "59899417913";
+const money = n => Number(n).toLocaleString('es-UY');
+
+// Recuperar carrito del localStorage
+let cart = JSON.parse(localStorage.getItem('bobyka_cart')) || [];
+
+function renderCart(){
+  const container = document.getElementById('cartContent');
+  const paymentSection = document.getElementById('paymentSection');
+  
+  if(cart.length === 0){
+    container.innerHTML = `
+      <div class="cart-section">
+        <div class="empty-cart">
+          <div class="empty-cart-icon">🛒</div>
+          <h3 style="font-family:Pacifico,cursive;font-size:1.8rem;margin-bottom:1rem">Tu carrito está vacío</h3>
+          <p style="color:#777;margin-bottom:1.5rem">¡Agregá productos para comenzar!</p>
+          <a href="/" class="btn">Ir a Comprar ♥</a>
+        </div>
+      </div>
+    `;
+    paymentSection.style.display = 'none';
+    return;
+  }
+  
+  let total = 0;
+  let itemsHTML = '';
+  
+  cart.forEach((item, index) => {
+    const itemTotal = item.price * item.qty;
+    total += itemTotal;
+    
+    itemsHTML += `
+      <div class="cart-item">
+        <div class="cart-item-header">
+          <span class="cart-item-name">${item.name}</span>
+          <span class="cart-item-qty">x${item.qty}</span>
+        </div>
+        <div class="cart-item-details">Precio unitario: $${money(item.price)}</div>
+        ${item.size ? `<div class="cart-item-details">Talle: ${item.size}</div>` : ''}
+        ${item.details ? `<div class="cart-item-details">Detalles: ${item.details}</div>` : ''}
+        <div class="cart-item-price">$${money(itemTotal)}</div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = `
+    <div class="cart-section">
+      <h2 class="section-title"> Productos Seleccionados</h2>
+      ${itemsHTML}
+      <div class="total-box">
+        <div class="total-label">Total del Pedido:</div>
+        <div class="total-amount">$${money(total)}</div>
+      </div>
+    </div>
+  `;
+  
+  paymentSection.style.display = 'block';
+  document.getElementById('transferTotal').textContent = money(total);
+}
+
+function copiarAlPortapapeles(texto, btn){
+  navigator.clipboard.writeText(texto).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(err => {
+    alert('No se pudo copiar. Copiá manualmente: ' + texto);
+  });
+}
+
+function irAWhatsApp(){
+  if(cart.length === 0){
+    alert('El carrito está vacío');
+    return;
+  }
+  
+  const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  
+  let waMessage = `*HOLA BOBYKA! ♥ QUIERO CONFIRMAR MI PEDIDO*%0A%0A`;
+  waMessage += `*📦 PRODUCTOS:*%0A`;
+  
+  cart.forEach((item, index) => {
+    const itemTotal = item.price * item.qty;
+    waMessage += `%0A${index + 1}. *${item.name}* x${item.qty}%0A`;
+    waMessage += `   Precio: $${money(item.price)} c/u%0A`;
+    waMessage += `   Subtotal: $${money(itemTotal)}%0A`;
+    if(item.size) waMessage += `   Talle: ${item.size}%0A`;
+    if(item.details) waMessage += `   Detalles: ${item.details}%0A`;
+  });
+  
+  waMessage += `%0A*💰 TOTAL: $${money(total)}*%0A`;
+  waMessage += `%0A*🏦 PAGO POR TRANSFERENCIA*%0A`;
+  waMessage += `Alias: bobyka.ventas%0A`;
+  waMessage += `Banco: OCA Blue%0A`;
+  waMessage += `%0A📎 *Adjunto comprobante de pago*`;
+  
+  // Abrir WhatsApp
+  window.open(`https://wa.me/${NUMERO_PEDIDOS}?text=${waMessage}`, '_blank');
+  
+  // Mostrar confirmación
+  setTimeout(() => {
+    alert('✅ Se abrió WhatsApp. Adjuntá el comprobante de transferencia y enviá el mensaje.');
+  }, 1000);
+}
+
+// Cargar el carrito al iniciar
+renderCart();
+</script>
+
+</body>
+</html>
