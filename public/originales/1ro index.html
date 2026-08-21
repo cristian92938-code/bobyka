@@ -23,16 +23,9 @@ nav a{color:#1a1a1a;text-decoration:none;margin-left:2rem;font-weight:500}
 .categories h2{font-family:Pacifico,cursive;font-size:2.5rem;margin-bottom:2rem}
 .category-wrapper{position:relative;max-width:1200px;margin:0 auto}
 .category-image{width:100%;display:block;border-radius:28px;box-shadow:0 12px 35px rgba(0,0,0,.12)}
-.category-buttons{position:absolute;bottom:5rem;left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;width:90%;padding:0 3%}
+.category-buttons{position:absolute;bottom:5rem;left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;width:90%;padding:0 3%}
 .category-btn{background:#fff8f5;border:2px solid #d4a0a0;color:#1a1a1a;border-radius:50px;padding:1rem;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.15);transition:.25s}
 .category-btn:hover{background:#d4a0a0;color:#fff;transform:translateY(-4px)}
-
-/* GALERÍA */
-.gallery{padding:4rem 2rem;background:#fff;text-align:center}
-.gallery h2{font-family:Pacifico,cursive;font-size:2.5rem;margin-bottom:2rem;color:#1a1a1a}
-.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;max-width:1200px;margin:0 auto}
-.gallery-item{border-radius:15px;overflow:hidden;box-shadow:0 5px 15px rgba(0,0,0,.1);aspect-ratio:1;background:#f5e6e0}
-.gallery-item img{width:100%;height:100%;object-fit:cover}
 
 footer{background:#1a1a1a;color:#fff;text-align:center;padding:2rem}.heart{color:#d4a0a0}
 
@@ -58,50 +51,120 @@ input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-r
 
 /* RESPONSIVE MEJORADO PARA MÓVIL */
 @media(max-width:800px){
+    /* Header compacto */
     header{padding:0.8rem 1rem}
     .logo{font-size:1.5rem}
     nav a{margin-left:0.7rem;font-size:.85rem}
+    
+    /* Hero más compacto */
     .hero{padding:3rem 1rem}
     .hero h1{font-size:2.2rem}
     .tagline{font-size:1rem}
+    
+    /* Categorías en una columna */
     .categories{padding:2rem 1rem 4rem}
     .categories h2{font-size:1.8rem;margin-bottom:1.5rem}
     .category-wrapper{max-width:100%}
     .category-image{border-radius:15px}
-    .category-buttons{position:relative;bottom:auto;left:auto;transform:none;margin-top:1.5rem;padding:0;width:100%;grid-template-columns:1fr 1fr;gap:0.8rem}
-    .category-btn{padding:0.9rem;font-size:0.9rem;border-radius:40px}
+    
+    /* Botones debajo de la imagen, uno debajo del otro en móviles muy chicos */
+    .category-buttons{
+        position:relative;
+        bottom:auto;
+        left:auto;
+        transform:none;
+        margin-top:1.5rem;
+        padding:0;
+        width:100%;
+        grid-template-columns:1fr 1fr;
+        gap:0.8rem
+    }
+    
+    .category-btn{
+        padding:0.9rem;
+        font-size:0.9rem;
+        border-radius:40px
+    }
+    
+    /* Modal optimizado para móvil */
     .modal{padding:0.5rem}
-    .modal-content{padding:1.5rem;border-radius:18px;max-height:95vh}
+    .modal-content{
+        padding:1.5rem;
+        border-radius:18px;
+        max-height:95vh
+    }
     .modal h3{font-size:1.5rem}
     .modal-price{font-size:1.2rem}
     #productIcon{font-size:3rem}
+    
+    /* Formulario en una columna */
     .form-grid{grid-template-columns:1fr;gap:0.8rem}
     .field{margin-top:0.8rem}
     .field.full{grid-column:auto}
-    input,select,textarea{padding:0.7rem;font-size:0.9rem}
-    .quantity button{width:35px;height:35px;font-size:1.1rem}
-    .info-box{padding:0.8rem;font-size:0.85rem}
+    
+    input,select,textarea{
+        padding:0.7rem;
+        font-size:0.9rem
+    }
+    
+    /* Botones de cantidad más chicos */
+    .quantity button{
+        width:35px;
+        height:35px;
+        font-size:1.1rem
+    }
+    
+    /* Info box más compacta */
+    .info-box{
+        padding:0.8rem;
+        font-size:0.85rem
+    }
     .info-box strong{font-size:0.9rem}
+    
+    /* Total y botones */
     .total{font-size:1rem;padding:0.8rem}
-    .btn{padding:0.9rem 1.5rem;font-size:0.95rem}
-    .btn-wa{padding:0.9rem 1.5rem;font-size:0.95rem}
-    .status{padding:1rem;font-size:0.9rem}
+    .btn{
+        padding:0.9rem 1.5rem;
+        font-size:0.95rem
+    }
+    .btn-wa{
+        padding:0.9rem 1.5rem;
+        font-size:0.95rem
+    }
+    
+    /* Status de pasos */
+    .status{
+        padding:1rem;
+        font-size:0.9rem
+    }
     .status h4{font-size:1.1rem}
     .status p{font-size:0.85rem}
-    .whatsapp-float{bottom:20px;right:20px;width:50px;height:50px}
-    .whatsapp-float svg{width:26px;height:26px}
-    .gallery{padding:2rem 1rem}
-    .gallery h2{font-size:1.8rem}
-    .gallery-grid{grid-template-columns:1fr 1fr}
+    
+    /* WhatsApp flotante más chico */
+    .whatsapp-float{
+        bottom:20px;
+        right:20px;
+        width:50px;
+        height:50px
+    }
+    .whatsapp-float svg{
+        width:26px;
+        height:26px
+    }
 }
 
+/* Para celulares muy chicos (menos de 480px) */
 @media(max-width:480px){
-    .category-buttons{grid-template-columns:1fr}
-    .category-btn{padding:1rem;font-size:1rem}
+    .category-buttons{
+        grid-template-columns:1fr
+    }
+    .category-btn{
+        padding:1rem;
+        font-size:1rem
+    }
     .hero h1{font-size:1.8rem}
     .modal-content{padding:1.2rem}
     .close{font-size:1.5rem;top:0.5rem;right:1rem}
-    .gallery-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -111,7 +174,6 @@ input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-r
   <div class="logo">Boby<span>ka</span> ♥</div>
   <nav>
     <a href="#categorias">Productos</a>
-    <a href="#galeria">Galería</a>
     <a href="#contacto">Contacto</a>
   </nav>
 </header>
@@ -127,34 +189,14 @@ input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-r
     <img class="category-image" src="bobyka-categorias.png" alt="Categorías Bobyka" onerror="this.style.display='none'">
     <div class="category-buttons">
       <button class="category-btn" onclick="openProduct('Remera Sublimada',430,'👕','Algodón premium, diseño personalizado full print.')">REMERAS ♥</button>
-      <button class="category-btn" onclick="openProduct('Taza 11oz',250,'☕','Cerámica premium, sublimación full color.')">TAZAS ♥</button>
+      <button class="category-btn" onclick="openProduct('Taza 11oz',250,'','Cerámica premium, sublimación full color.')">TAZAS ♥</button>
       <button class="category-btn" onclick="openProduct('Gorra Personalizada',250,'🧢','Trucker o plana, bordado o sublimación.')">GORROS ♥</button>
-      <button class="category-btn" onclick="openProduct('Plato Decorativo',510,'🍽️','Cerámica blanca, sublimación de alta calidad.')">PLATOS ♥</button>
-      <button class="category-btn" onclick="openProduct('Cantimplora',390,'💧','Acero inoxidable, diseño personalizado.')">CANTIMPLORAS ♥</button>
+      <button class="category-btn" onclick="openProduct('Plato Decorativo',600,'🍽️','Cerámica blanca, sublimación de alta calidad.')">PLATOS ♥</button>
     </div>
   </div>
 </section>
 
-<!-- GALERÍA AGREGADA -->
-<section class="gallery" id="galeria">
-  <h2>Nuestros Trabajos ♥</h2>
-  <div class="gallery-grid">
-    <div class="gallery-item"><img src="trabajo1.jpg" onerror="this.src='https://placehold.co/400x400/f5e6e0/d4a0a0?text=Trabajo+1'" alt="Trabajo 1"></div>
-    <div class="gallery-item"><img src="trabajo2.jpg" onerror="this.src='https://placehold.co/400x400/f5e6e0/d4a0a0?text=Trabajo+2'" alt="Trabajo 2"></div>
-    <div class="gallery-item"><img src="trabajo3.jpg" onerror="this.src='https://placehold.co/400x400/f5e6e0/d4a0a0?text=Trabajo+3'" alt="Trabajo 3"></div>
-    <div class="gallery-item"><img src="trabajo4.jpg" onerror="this.src='https://placehold.co/400x400/f5e6e0/d4a0a0?text=Trabajo+4'" alt="Trabajo 4"></div>
-    <div class="gallery-item"><img src="trabajo5.jpg" onerror="this.src='https://placehold.co/400x400/f5e6e0/d4a0a0?text=Trabajo+5'" alt="Trabajo 5"></div>
-    <div class="gallery-item"><img src="trabajo6.jpg" onerror="this.src='https://placehold.co/400x400/f5e6e0/d4a0a0?text=Trabajo+6'" alt="Trabajo 6"></div>
-    <div class="gallery-item"><img src="trabajo7.jpg" onerror="this.src='https://placehold.co/400x400/f5e6e0/d4a0a0?text=Trabajo+7'" alt="Trabajo 7"></div>
-    <div class="gallery-item"><img src="trabajo8.jpg" onerror="this.src='https://placehold.co/400x400/f5e6e0/d4a0a0?text=Trabajo+8'" alt="Trabajo 8"></div>
-  </div>
-</section>
-
-<footer id="contacto">
-  Bobyka © 2026 | Hecho con <span class="heart">♥</span> en Uruguay<br>
-  <a href="terminos.html" style="color:#d4a0a0;text-decoration:none;margin:0 10px">Términos y Condiciones</a> | 
-  <a href="privacidad.html" style="color:#d4a0a0;text-decoration:none;margin:0 10px">Política de Privacidad</a>
-</footer>
+<footer id="contacto">Bobyka © 2026 | Hecho con <span class="heart">♥</span> en Uruguay</footer>
 
 <a href="https://wa.me/59898586123?text=Hola%20Bobyka!%20Necesito%20ayuda%20o%20tengo%20una%20consulta%20♥" class="whatsapp-float" target="_blank" title="Soporte y Ayuda">
   <svg viewBox="0 0 24 24">
@@ -211,13 +253,11 @@ input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-r
 const NUMERO_SOPORTE = "59898586123";
 const NUMERO_PEDIDOS = "59899417913";
 
-// LINK DE CANTIMPLORA AGREGADO ACÁ
 const mpLinks = {
     'Remera Sublimada': 'https://mpago.la/2UKXfmb',
     'Taza 11oz': 'https://mpago.la/2egM7P6',
     'Gorra Personalizada': 'https://mpago.la/2JSFGgi',
-    'Plato Decorativo': 'https://mpago.la/19GAMto',
-    'Cantimplora': 'https://mpago.la/173Gmum'
+    'Plato Decorativo': 'https://mpago.la/19GAMto'
 };
 
 let current={name:'',price:0,qty:1};
@@ -278,6 +318,7 @@ function prepareOrder(){
  const status = document.getElementById('status');
  status.style.display = 'block';
  
+ // Inicialmente el botón de WhatsApp está deshabilitado
  status.innerHTML = `
    <div style="text-align:left; padding: 0.5rem;">
        <h4 style="color:#d4a0a0; margin-bottom:1rem; font-size:1.2rem; text-align:center;">¡Pedido generado! Seguì estos pasos:</h4>
@@ -303,6 +344,7 @@ function prepareOrder(){
    </div>
  `;
  
+ // Guardar la URL de WhatsApp para usarla después
  status.dataset.waUrl = waUrl;
 }
 
@@ -321,6 +363,7 @@ function startCountdown(){
       countdownEl.textContent = seconds;
     } else {
       clearInterval(countdownTimer);
+      // Activar el botón
       waButton.disabled = false;
       waButton.innerHTML = 'Enviar comprobante y diseño por WhatsApp';
       waButton.onclick = () => { window.open(waUrl, '_blank'); };
