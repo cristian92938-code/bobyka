@@ -1,185 +1,263 @@
-require('dotenv').config();
-const express = require('express');
-const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
-const { createClient } = require('@supabase/supabase-js');
-const multer = require('multer');
-const path = require('path');
+import "dotenv/config";
+import express from "express";
+import multer from "multer";
+import cors from "cors";
+import crypto from "crypto";
+import path from "path";
+import { fileURLToPath } from "url";
+import { createClient } from "@supabase/supabase-js";
+import { MercadoPagoConfig, Preference, WebhookSignatureValidator } from "mercadopago";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT || 3000);
+const COOKIE_NAME = "bobyka_admin";
+const SESSION_TTL = 8 * 60 * 60 * 1000;
 
-// Configuración de Multer para recibir archivos (máximo 10MB)
-const upload = multer({ 
+const required = ["SUPABASE_URL","SUPABASE_SERVICE_ROLE_KEY","MP_ACCESS_TOKEN","PUBLIC_URL","ADMIN_USER","ADMIN_PASSWORD"];
+for (const key of required) {
+  if (!process.env[key]) console.warn(`Falta variable de entorno: ${key}`);
+}
+
+const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 } 
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req,file,cb) => {
+    const ok = ["image/png","image/jpeg","image/webp"].includes(file.mimetype);
+    cb(ok ? null : new Error("Solo se permiten PNG, JPG o WEBP."), ok);
+  }
 });
 
-// Configuración de Mercado Pago (SDK v2)
-const mpClient = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-const mpPreference = new Preference(mpClient);
-const mpPayment = new Payment(mpClient);
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+const mpClient = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN, options:{timeout:10000} });
+const preference = new Preference(mpClient);
 
-// Configuración de Supabase CON OPCIONES DE SERVICE_ROLE (esto es lo que faltaba)
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
+const PRODUCTS = Object.freeze({
+  "Taza 11oz": 4500,
+  "Remera Sublimada": 8900,
+  "Gorra Personalizada": 6200,
+  "Plato Decorativo": 5800
+});
 
-// Servir archivos estáticos (tu HTML, CSS, etc.)
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.set("trust proxy", 1);
+app.use(cors({ origin: process.env.PUBLIC_URL, credentials: true }));
+app.use(express.json({limit:"1mb"}));
+app.use(express.urlencoded({extended:true}));
+app.use(express.static(path.join(__dirname,"public"), { extensions:["html"] }));
 
-// Lista de precios (validación de seguridad)
-const PRODUCTS = {
-  'Remera Sublimada': 430,
-  'Taza 11oz': 250,
-  'Gorra Personalizada': 250,
-  'Plato Decorativo': 510,
-  'Cantimplora': 390
-};
-
-// RUTA PRINCIPAL: Crear pedido + Subir archivo + Generar link de MP
-app.post('/api/orders', upload.single('design'), async (req, res) => {
+function cookieSecure() {
+  return process.env.NODE_ENV === "production" || String(process.env.PUBLIC_URL||"").startsWith("https://");
+}
+function sign(value) {
+  return crypto.createHmac("sha256", process.env.ADMIN_COOKIE_SECRET || "CAMBIAR_ESTA_CLAVE").update(value).digest("hex");
+}
+function makeSession() {
+  const payload = Buffer.from(JSON.stringify({u:process.env.ADMIN_USER,exp:Date.now()+SESSION_TTL})).toString("base64url");
+  return `${payload}.${sign(payload)}`;
+}
+function validSession(req) {
+  const raw = req.headers.cookie?.split(";").map(x=>x.trim()).find(x=>x.startsWith(COOKIE_NAME+"="))?.split("=")[1];
+  if (!raw) return false;
+  const [payload,sig] = raw.split(".");
+  if (!payload || !sig) return false;
+  const expected = sign(payload);
+  if (!crypto.timingSafeEqual(Buffer.from(sig),Buffer.from(expected))) return false;
   try {
-    const { product, quantity, name, email, phone, size, details } = req.body;
-    const qty = parseInt(quantity) || 1;
-    
-    if (!PRODUCTS[product]) {
-      return res.status(400).json({ error: 'Producto no válido' });
-    }
-    
-    const total = PRODUCTS[product] * qty;
-    let archivoPath = null;
-    let archivoNombre = null;
-    let archivoTipo = null;
+    const data=JSON.parse(Buffer.from(payload,"base64url").toString());
+    return data.u===process.env.ADMIN_USER && Number(data.exp)>Date.now();
+  } catch { return false; }
+}
+function requireAdmin(req,res,next) {
+  if (!validSession(req)) return res.status(401).json({error:"No autorizado"});
+  next();
+}
+function safeFileExt(mime) {
+  return mime==="image/png" ? "png" : mime==="image/webp" ? "webp" : "jpg";
+}
+function normalizeStatus(s) {
+  return ["pendiente","recibido","en_produccion","listo","entregado","cancelado"].includes(s) ? s : null;
+}
 
-    // Si el cliente subió un archivo, lo guardamos en Supabase Storage
-    if (req.file) {
-      const fileExt = req.file.originalname.split('.').pop();
-      const fileName = `${Date.now()}-${name.replace(/\s+/g, '_')}.${fileExt}`;
-      const filePath = `designs/${fileName}`;
-      
-      const { error: uploadError } = await supabase
-        .storage
-        .from('disenos')
-        .upload(filePath, req.file.buffer, {
-          contentType: req.file.mimetype,
-          upsert: false
-        });
-      
-      if (uploadError) {
-        console.error('Error subiendo archivo a Supabase:', uploadError);
-        return res.status(500).json({ error: 'Error al subir el diseño: ' + uploadError.message });
+app.post("/api/orders", upload.single("design"), async (req,res) => {
+  try {
+    const {product,quantity,name,email,phone,size,details}=req.body;
+    const qty=Number(quantity);
+    if (!PRODUCTS[product] || !Number.isInteger(qty) || qty<1 || qty>100) {
+      return res.status(400).json({error:"Producto o cantidad inválidos."});
+    }
+    if (!name?.trim() || !email?.trim() || !req.file) {
+      return res.status(400).json({error:"Faltan datos obligatorios o el diseño."});
+    }
+
+    const orderId=crypto.randomUUID();
+    const total=PRODUCTS[product]*qty;
+    const ext=safeFileExt(req.file.mimetype);
+    const storagePath=`pedidos/${orderId}.${ext}`;
+
+    const {error:uploadError}=await supabase.storage
+      .from(process.env.SUPABASE_BUCKET || "disenos")
+      .upload(storagePath,req.file.buffer,{
+        contentType:req.file.mimetype,
+        cacheControl:"3600",
+        upsert:false
+      });
+    if(uploadError) throw uploadError;
+
+    const {error:dbError}=await supabase.from("pedidos").insert({
+      id:orderId,
+      producto:product,
+      cantidad:qty,
+      precio_unitario:PRODUCTS[product],
+      total,
+      nombre:name.trim(),
+      email:email.trim().toLowerCase(),
+      telefono:phone?.trim()||null,
+      talle:product.includes("Remera") ? (size||null) : null,
+      detalles:details?.trim()||null,
+      archivo_path:storagePath,
+      archivo_nombre:req.file.originalname,
+      archivo_tipo:req.file.mimetype,
+      estado_pago:"pendiente",
+      estado_pedido:"pendiente"
+    });
+    if(dbError) throw dbError;
+
+    const baseUrl=String(process.env.PUBLIC_URL).replace(/\/$/,"");
+    const mpResponse=await preference.create({
+      body:{
+        items:[{
+          id:orderId,
+          title:`${product} x ${qty}`,
+          quantity:1,
+          currency_id:"UYU",
+          unit_price:total
+        }],
+        payer:{name:name.trim(),email:email.trim().toLowerCase()},
+        external_reference:orderId,
+        back_urls:{
+          success:`${baseUrl}/?pago=success&pedido=${orderId}`,
+          failure:`${baseUrl}/?pago=failure&pedido=${orderId}`,
+          pending:`${baseUrl}/?pago=pending&pedido=${orderId}`
+        },
+        auto_return:"approved",
+        notification_url:`${baseUrl}/api/mercadopago/webhook`
       }
-      
-      archivoPath = filePath;
-      archivoNombre = fileName;
-      archivoTipo = req.file.mimetype;
-    }
-
-    // Guardar el pedido en la tabla "pedidos" con los nombres correctos
-    const { data: order, error: dbError } = await supabase
-      .from('pedidos')
-      .insert([{
-        producto: product,
-        cantidad: qty,
-        precio_unitario: PRODUCTS[product],
-        total: total,
-        nombre: name,
-        email: email,
-        telefono: phone || null,
-        talle: size || null,
-        detalles: details || null,
-        archivo_path: archivoPath,
-        archivo_nombre: archivoNombre,
-        archivo_tipo: archivoTipo,
-        estado_pedido: 'pendiente',
-        estado_pago: 'pendiente',
-        created_at: new Date().toISOString()
-      }])
-      .select()
-      .single();
-    
-    if (dbError) {
-      console.error('Error guardando pedido en BD:', dbError);
-      return res.status(500).json({ error: 'Error al guardar el pedido: ' + dbError.message });
-    }
-
-    // Crear la preferencia de pago en Mercado Pago
-    const preferenceBody = {
-      items: [{
-        title: `${product} x${qty}`,
-        quantity: 1,
-        currency_id: 'UYU',
-        unit_price: total
-      }],
-      payer: {
-        name: name,
-        email: email
-      },
-      back_urls: {
-        success: `${process.env.PUBLIC_URL}/`,
-        failure: `${process.env.PUBLIC_URL}/`,
-        pending: `${process.env.PUBLIC_URL}/`
-      },
-      auto_return: 'approved',
-      notification_url: `${process.env.PUBLIC_URL}/api/webhook`
-    };
-
-    const mpResponse = await mpPreference.create({ body: preferenceBody });
-
-    if (!mpResponse.init_point) {
-      return res.status(500).json({ error: 'Error creando preferencia de pago' });
-    }
-
-    // Actualizar el pedido con el link de pago
-    await supabase
-      .from('pedidos')
-      .update({ 
-        preferencia_id: mpResponse.id,
-        pago_id: mpResponse.init_point
-      })
-      .eq('id', order.id);
-
-    res.json({
-      success: true,
-      init_point: mpResponse.init_point,
-      orderId: order.id
     });
 
-  } catch (error) {
-    console.error('Error general en /api/orders:', error);
-    res.status(500).json({ error: 'Error interno del servidor: ' + error.message });
+    const pref=mpResponse?.response || mpResponse;
+    await supabase.from("pedidos").update({preferencia_id:pref.id||null}).eq("id",orderId);
+
+    return res.json({order_id:orderId,init_point:pref.init_point});
+  } catch(e) {
+    console.error(e);
+    return res.status(500).json({error:e.message || "No se pudo preparar el pedido."});
   }
 });
 
-// RUTA WEBHOOK
-app.post('/api/webhook', express.json(), async (req, res) => {
+// Webhook de pagos: valida firma si MP_WEBHOOK_SECRET está configurado,
+// consulta el pago directamente en Mercado Pago y recién entonces actualiza el pedido.
+app.post("/api/mercadopago/webhook", async (req,res) => {
   try {
-    const { type, data } = req.body;
-    if (type === 'payment') {
-      const paymentId = data.id;
-      const paymentInfo = await mpPayment.get({ id: paymentId });
-      const status = paymentInfo.status;
+    const dataId=String(req.query["data.id"] || req.body?.data?.id || "");
+    const secret=process.env.MP_WEBHOOK_SECRET;
 
-      if (status === 'approved') {
-        console.log(`Pago aprobado! ID: ${paymentId}`);
+    if (secret) {
+      try {
+        WebhookSignatureValidator.validate({
+          xSignature:req.headers["x-signature"],
+          xRequestId:req.headers["x-request-id"],
+          dataId,
+          secret
+        });
+      } catch (err) {
+        console.error("Webhook MP rechazado:",err.message);
+        return res.sendStatus(401);
       }
+    } else if (process.env.NODE_ENV==="production") {
+      console.error("MP_WEBHOOK_SECRET no configurado en producción.");
+      return res.sendStatus(401);
     }
-    res.status(200).send('OK');
-  } catch (error) {
-    console.error('Error en webhook:', error);
-    res.status(500).send('Error');
+
+    if (!dataId) return res.sendStatus(200);
+
+    const paymentResp=await fetch(`https://api.mercadopago.com/v1/payments/${encodeURIComponent(dataId)}`,{
+      headers:{Authorization:`Bearer ${process.env.MP_ACCESS_TOKEN}`}
+    });
+    if(!paymentResp.ok) return res.sendStatus(200);
+    const payment=await paymentResp.json();
+    const orderId=payment.external_reference;
+
+    if(!orderId) return res.sendStatus(200);
+
+    const {data:order,error}=await supabase.from("pedidos").select("id,total").eq("id",orderId).maybeSingle();
+    if(error || !order) return res.sendStatus(200);
+
+    const sameAmount=Math.abs(Number(payment.transaction_amount)-Number(order.total))<0.01;
+    const sameCurrency=payment.currency_id==="UYU";
+
+    let estadoPedido="pendiente";
+    if(payment.status==="approved" && sameAmount && sameCurrency) estadoPedido="recibido";
+    if(["rejected","cancelled"].includes(payment.status)) estadoPedido="cancelado";
+
+    await supabase.from("pedidos").update({
+      estado_pago:payment.status || "pendiente",
+      estado_pedido:estadoPedido,
+      pago_id:String(payment.id)
+    }).eq("id",orderId);
+
+    return res.sendStatus(200);
+  } catch(e) {
+    console.error("Webhook error:",e);
+    return res.sendStatus(200);
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+// Admin
+app.post("/api/admin/login",(req,res)=>{
+  const {user,pass}=req.body||{};
+  if(user===process.env.ADMIN_USER && pass===process.env.ADMIN_PASSWORD) {
+    const secure=cookieSecure();
+    res.setHeader("Set-Cookie",`${COOKIE_NAME}=${makeSession()}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_TTL/1000}${secure?"; Secure":""}`);
+    return res.json({ok:true});
+  }
+  return res.status(401).json({error:"Usuario o contraseña incorrectos."});
 });
+app.get("/api/admin/me",requireAdmin,(req,res)=>res.json({ok:true,user:process.env.ADMIN_USER}));
+app.post("/api/admin/logout",(req,res)=>{
+  res.setHeader("Set-Cookie",`${COOKIE_NAME}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0${cookieSecure()?"; Secure":""}`);
+  res.json({ok:true});
+});
+app.get("/api/admin/orders",requireAdmin,async(req,res)=>{
+  let query=supabase.from("pedidos").select("*").order("created_at",{ascending:false}).limit(500);
+  if(req.query.status) query=query.eq("estado_pedido",req.query.status);
+  const {data,error}=await query;
+  if(error) return res.status(500).json({error:error.message});
+  res.json({orders:data||[]});
+});
+app.patch("/api/admin/orders/:id",requireAdmin,async(req,res)=>{
+  const status=normalizeStatus(req.body?.estado_pedido);
+  if(!status)return res.status(400).json({error:"Estado inválido."});
+  const {data,error}=await supabase.from("pedidos").update({estado_pedido:status}).eq("id",req.params.id).select().single();
+  if(error)return res.status(500).json({error:error.message});
+  res.json({order:data});
+});
+app.get("/api/admin/orders/:id/design",requireAdmin,async(req,res)=>{
+  const {data:order,error}=await supabase.from("pedidos").select("archivo_path,archivo_nombre").eq("id",req.params.id).maybeSingle();
+  if(error || !order?.archivo_path)return res.status(404).send("Diseño no encontrado.");
+  const {data,error:signError}=await supabase.storage.from(process.env.SUPABASE_BUCKET||"disenos").createSignedUrl(
+    order.archivo_path,300,{download:order.archivo_nombre||true}
+  );
+  if(signError || !data?.signedUrl)return res.status(500).send("No se pudo generar el enlace.");
+  res.redirect(data.signedUrl);
+});
+
+app.get("/admin",(req,res)=>res.sendFile(path.join(__dirname,"public","admin","index.html")));
+
+app.use((err,req,res,next)=>{
+  console.error(err);
+  res.status(400).json({error:err.message||"Error de solicitud"});
+});
+
+app.listen(PORT,()=>console.log(`Bobyka funcionando en http://localhost:${PORT}`));
