@@ -45,7 +45,6 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
     const { product, quantity, name, email, phone, size, details } = req.body;
     const qty = parseInt(quantity) || 1;
     
-    // 1. Validar que el producto exista y tenga precio
     if (!PRODUCTS[product]) {
       return res.status(400).json({ error: 'Producto no válido' });
     }
@@ -53,7 +52,6 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
     const total = PRODUCTS[product] * qty;
     let designUrl = null;
 
-    // 2. Si el cliente subió un archivo, lo guardamos en Supabase
     if (req.file) {
       const fileExt = req.file.originalname.split('.').pop();
       const fileName = `${Date.now()}-${name.replace(/\s+/g, '_')}.${fileExt}`;
@@ -72,7 +70,6 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
         return res.status(500).json({ error: 'Error al subir el diseño' });
       }
       
-      // Obtener el link público del archivo
       const { data: urlData } = supabase
         .storage
         .from('disenos')
@@ -81,7 +78,6 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
       designUrl = urlData.publicUrl;
     }
 
-    // 3. Guardar el pedido en la base de datos de Supabase
     const { data: order, error: dbError } = await supabase
       .from('orders')
       .insert([{
@@ -93,7 +89,7 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
         customer_phone: phone,
         size: size || null,
         details: details || null,
-        design_url: designUrl, // Acá guardamos el link del archivo
+        design_url: designUrl,
         status: 'pending',
         created_at: new Date().toISOString()
       }])
@@ -105,7 +101,6 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
       return res.status(500).json({ error: 'Error al guardar el pedido' });
     }
 
-    // 4. Crear la preferencia de pago en Mercado Pago
     const preference = {
       items: [{
         title: `${product} x${qty}`,
@@ -133,13 +128,11 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
       return res.status(500).json({ error: 'Error creando preferencia de pago' });
     }
 
-    // 5. Actualizar el pedido con el link de pago de MP
     await supabase
       .from('orders')
       .update({ payment_url: mpData.init_point })
       .eq('id', order.id);
 
-    // 6. Enviar el link al frontend
     res.json({
       success: true,
       init_point: mpData.init_point,
@@ -152,7 +145,7 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
   }
 });
 
-// RUTA WEBHOOK (para que MP te avise cuando pagan)
+// RUTA WEBHOOK
 app.post('/api/webhook', express.json(), async (req, res) => {
   try {
     const { type, data } = req.body;
@@ -162,8 +155,6 @@ app.post('/api/webhook', express.json(), async (req, res) => {
       const status = paymentInfo.body.status;
 
       if (status === 'approved') {
-        // Buscar el pedido por el external_reference o metadata (si lo configuraste)
-        // Por ahora, un log simple para que veas que llega:
         console.log(`Pago aprobado! ID: ${paymentId}`);
       }
     }
@@ -174,7 +165,6 @@ app.post('/api/webhook', express.json(), async (req, res) => {
   }
 });
 
-// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
