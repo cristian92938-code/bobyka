@@ -135,6 +135,7 @@ input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-r
   </div>
 </section>
 
+<!-- GALERÍA AGREGADA -->
 <section class="gallery" id="galeria">
   <h2>Nuestros Trabajos ♥</h2>
   <div class="gallery-grid">
@@ -188,26 +189,18 @@ input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-r
    <div class="field full">
     <div class="info-box">
       <strong> ¿Cómo envío mi diseño?</strong>
-      Podés subirlo acá mismo o enviarlo por WhatsApp en el Paso 2.
+      Una vez realizado el pago, podrás enviar tu logo o diseño directamente por WhatsApp en el Paso 2.
     </div>
    </div>
 
    <div class="field full"><label>Ubicación y medidas del diseño</label>
-    <textarea id="details" rows="3" placeholder="Ej: Logo grande en el centro, chico en la tetilla izquierda, en la espalda, etc."></textarea>
-   </div>
-
-   <!-- CAMPO DE SUBIDA DE ARCHIVO AGREGADO -->
-   <div class="field full">
-    <label>Subí tu diseño (opcional)</label>
-    <input type="file" id="designFile" accept="image/*,.pdf,.ai,.psd" style="padding:0.5rem; background:#fdf5f2; border:2px solid #e8c4c4; border-radius:10px; width:100%;">
-    <p style="font-size:0.8rem;color:#777;margin-top:0.3rem">Formatos: JPG, PNG, PDF, AI, PSD. Máx 10MB</p>
+    <textarea id="details" rows="3" placeholder="Ej: Logo grande en el centro, chico en la tetilla izquierda, en la espalda, etc. (Especificá medidas aproximadas si es necesario)"></textarea>
    </div>
   </div>
   
   <div class="total">Total: $<span id="totalPrice">0</span></div>
   
-  <!-- SE AGREGÓ id="generateBtn" -->
-  <button class="btn" id="generateBtn" style="width:100%;margin-top:1rem" onclick="prepareOrder()">Generar Pedido ♥</button>
+  <button class="btn" style="width:100%;margin-top:1rem" onclick="prepareOrder()">Generar Pedido ♥</button>
   <p class="note">Tu pedido se procesa una vez confirmado el pago y recibido el diseño.</p>
   
   <div id="status" class="status"></div>
@@ -217,6 +210,15 @@ input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-r
 <script>
 const NUMERO_SOPORTE = "59898586123";
 const NUMERO_PEDIDOS = "59899417913";
+
+// LINK DE CANTIMPLORA AGREGADO ACÁ
+const mpLinks = {
+    'Remera Sublimada': 'https://mpago.la/2UKXfmb',
+    'Taza 11oz': 'https://mpago.la/2egM7P6',
+    'Gorra Personalizada': 'https://mpago.la/2JSFGgi',
+    'Plato Decorativo': 'https://mpago.la/19GAMto',
+    'Cantimplora': 'https://mpago.la/173Gmum'
+};
 
 let current={name:'',price:0,qty:1};
 let countdownTimer = null;
@@ -231,13 +233,6 @@ function openProduct(name,price,icon,description){
  document.getElementById('qty').textContent=1;
  document.getElementById('sizeField').style.display=name.includes('Remera')?'block':'none';
  document.getElementById('status').style.display='none';
- 
- // Resetear botón y archivo
- const btn=document.getElementById('generateBtn');
- btn.disabled=false;
- btn.textContent='Generar Pedido ♥';
- document.getElementById('designFile').value='';
- 
  if(countdownTimer) clearInterval(countdownTimer);
  updateTotal();
  document.getElementById('productModal').classList.add('show');
@@ -256,85 +251,46 @@ function changeQty(n){
 
 function updateTotal(){ document.getElementById('totalPrice').textContent=money(current.price*current.qty); }
 
-// FUNCIÓN ACTUALIZADA PARA ENVIAR EL ARCHIVO AL SERVIDOR
-async function prepareOrder(){
+function prepareOrder(){
  const name=document.getElementById('customerName').value.trim();
  const email=document.getElementById('customerEmail').value.trim();
  const phone=document.getElementById('customerPhone').value.trim();
  const details=document.getElementById('details').value.trim();
  const size=document.getElementById('size').value;
- const designFile=document.getElementById('designFile').files[0];
  
  if(!name||!email){alert('Completá nombre y email ♥');return}
 
- const btn=document.getElementById('generateBtn');
- btn.disabled=true;
- btn.textContent='Procesando...';
-
  const total = current.price * current.qty;
- const formData=new FormData();
- formData.append('product',current.name);
- formData.append('quantity',current.qty);
- formData.append('name',name);
- formData.append('email',email);
- formData.append('phone',phone);
- formData.append('size',current.name.includes('Remera')?size:'');
- formData.append('details',details);
+ const mpLink = mpLinks[current.name];
  
- if(designFile){
-   formData.append('design',designFile);
- }
+ const waMessage = `Hola Bobyka! ♥ Ya realicé el pago de mi pedido. Adjunto comprobante y diseño.%0A%0A` +
+                   ` *Producto:* ${current.name}%0A` +
+                   `🔢 *Cantidad:* ${current.qty}%0A` +
+                   `💰 *Total pagado:* $${money(total)}%0A` +
+                   `👤 *Nombre:* ${name}%0A` +
+                   ` *Email:* ${email}%0A` +
+                   `📱 *Teléfono:* ${phone}%0A` +
+                   (current.name.includes('Remera') ? `📏 *Talle:* ${size}%0A` : '') +
+                   ` *Ubicación/Medidas:* ${details || 'A coordinar'}`;
+                   
+ const waUrl = `https://wa.me/${NUMERO_PEDIDOS}?text=${waMessage}`;
 
- try{
-   const res=await fetch('/api/orders',{method:'POST',body:formData});
-   const data=await res.json();
-   
-   if(!res.ok){
-     alert(data.error||'Error al generar el pedido');
-     btn.disabled=false;
-     btn.textContent='Generar Pedido ♥';
-     return;
-   }
-   
-   // Mostrar los pasos con el link real que devuelve el servidor
-   showSteps(data.init_point, current.name, current.qty, current.price, name, email, phone, size, details);
-   
- }catch(e){
-   alert('Error de conexión: '+e.message);
-   btn.disabled=false;
-   btn.textContent='Generar Pedido ♥';
- }
-}
-
-function showSteps(mpUrl,product,qty,price,name,email,phone,size,details){
- const total=price*qty;
- const waMessage=`Hola Bobyka! ♥ Ya realicé el pago de mi pedido.%0A%0A`+
- `📦 *Producto:* ${product}%0A`+
- `🔢 *Cantidad:* ${qty}%0A`+
- `💰 *Total pagado:* $${money(total)}%0A`+
- `👤 *Nombre:* ${name}%0A`+
- `📧 *Email:* ${email}%0A`+
- `📱 *Teléfono:* ${phone}%0A`+
- (product.includes('Remera')?`📏 *Talle:* ${size}%0A`:'')+
- `📍 *Ubicación/Medidas:* ${details||'A coordinar'}`;
+ const status = document.getElementById('status');
+ status.style.display = 'block';
  
- const waUrl=`https://wa.me/${NUMERO_PEDIDOS}?text=${waMessage}`;
- 
- const status=document.getElementById('status');
- status.style.display='block';
- status.innerHTML=`
+ status.innerHTML = `
    <div style="text-align:left; padding: 0.5rem;">
        <h4 style="color:#d4a0a0; margin-bottom:1rem; font-size:1.2rem; text-align:center;">¡Pedido generado! Seguì estos pasos:</h4>
 
        <div style="margin-bottom: 1.5rem;">
            <strong style="background:#d4a0a0; color:#fff; padding:2px 10px; border-radius:12px; font-size:0.9rem;">PASO 1</strong>
            <p style="margin: 0.5rem 0; font-size:0.95rem;">Realizá el pago de <strong>$${money(total)}</strong> en Mercado Pago:</p>
-           <a href="${mpUrl}" target="_blank" class="btn" style="display:block; font-size:1rem;" onclick="startCountdown()">Pagar con Mercado Pago ♥</a>
+           <a href="${mpLink}" target="_blank" class="btn" style="display:block; font-size:1rem;" onclick="startCountdown()">Pagar con Mercado Pago ♥</a>
        </div>
 
        <div style="border-top: 1px dashed #ccc; padding-top: 1.5rem;">
            <strong style="background:#25D366; color:#fff; padding:2px 10px; border-radius:12px; font-size:0.9rem;">PASO 2</strong>
-           <p style="margin: 0.5rem 0; font-size:0.95rem;">Una vez pagado, enviá el <strong>comprobante</strong> por WhatsApp (el diseño ya lo tenemos):</p>
+           <p style="margin: 0.5rem 0; font-size:0.95rem;">Una vez pagado, enviá el <strong>comprobante y tu diseño</strong> por WhatsApp:</p>
            <div id="waButtonContainer">
                <button class="btn-wa" id="waButton" disabled style="display:block; font-size:1rem; width:100%;">
                    🔍 Chequeando pago... <span id="countdown">45</span>s
@@ -366,7 +322,7 @@ function startCountdown(){
     } else {
       clearInterval(countdownTimer);
       waButton.disabled = false;
-      waButton.innerHTML = 'Enviar comprobante por WhatsApp';
+      waButton.innerHTML = 'Enviar comprobante y diseño por WhatsApp';
       waButton.onclick = () => { window.open(waUrl, '_blank'); };
       waButton.style.cursor = 'pointer';
       waInstructions.style.display = 'block';
