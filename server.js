@@ -19,10 +19,16 @@ const mpClient = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKE
 const mpPreference = new Preference(mpClient);
 const mpPayment = new Payment(mpClient);
 
-// Configuración de Supabase
+// Configuración de Supabase CON OPCIONES DE SERVICE_ROLE (esto es lo que faltaba)
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
 );
 
 // Servir archivos estáticos (tu HTML, CSS, etc.)
@@ -70,7 +76,7 @@ app.post('/api/orders', upload.single('design'), async (req, res) => {
       
       if (uploadError) {
         console.error('Error subiendo archivo a Supabase:', uploadError);
-        return res.status(500).json({ error: 'Error al subir el diseño' });
+        return res.status(500).json({ error: 'Error al subir el diseño: ' + uploadError.message });
       }
       
       archivoPath = filePath;
