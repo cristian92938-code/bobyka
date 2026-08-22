@@ -92,6 +92,23 @@ footer{background:#1a1a1a;color:#fff;text-align:center;padding:2rem;margin-top:3
     .bank-card-logo{width:50px;height:50px}
 }
 </style>
+
+<style id="bobyka-v2-cart">
+:root{--pink:#d39a9f;--cream:#fff8f6;--ink:#171717}
+body{background:linear-gradient(180deg,#f9e9e6 0,#fff8f6 34%,#fff 100%)}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);padding:13px 2rem}
+.container{max-width:1050px}
+.page-title{font-size:2.8rem;margin:35px 0 25px}
+.cart-section,.payment-section{border:1px solid #eee;box-shadow:0 15px 40px rgba(30,15,18,.08)}
+.cart-item{background:#fff;border:1px solid #ead8d9;box-shadow:0 6px 20px rgba(30,15,18,.04)}
+.total-box{background:linear-gradient(135deg,#171717,#292929);box-shadow:0 10px 25px rgba(0,0,0,.12)}
+.total-amount{color:#e6a9ad}
+.bank-card{border:1px solid #ead8d9;background:#fff}
+.copy-btn{background:#d39a9f}
+.btn{background:#171717}.btn:hover{background:#d39a9f}
+.btn-wa{background:#25d366}.btn-wa:hover{background:#128c7e}
+@media(max-width:800px){header{padding:.8rem 1rem}.page-title{font-size:2rem}}
+</style>
 </head>
 <body>
 
@@ -377,10 +394,9 @@ function irAWhatsApp(){
   }, 1000);
 
   setTimeout(() => {
-  alert('✅ Se abrió WhatsApp. Adjuntá el comprobante de transferencia y enviá el mensaje.');
-  localStorage.removeItem('bobyka_cart');
-  cart = [];
-}, 1000);
+    localStorage.removeItem('bobyka_cart');
+    cart = [];
+  }, 1200);
 }
 
 renderCart();

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bobyka - Personalizamos tus ideas</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,sans-serif;background:#f5e6e0;color:#1a1a1a;line-height:1.6}
+header{background:#fff;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(212,160,160,.2)}
+.logo{font-family:Pacifico,cursive;font-size:2rem}.logo span{color:#d4a0a0}
+nav a{color:#1a1a1a;text-decoration:none;margin-left:2rem;font-weight:500}
+.hero{text-align:center;padding:5rem 2rem;background:linear-gradient(135deg,#f5e6e0,#e8c4c4)}
+.hero h1{font-family:Pacifico,cursive;font-size:3.5rem}.tagline{font-size:1.3rem;margin:1rem 0 2rem;color:#555}.tagline span{color:#d4a0a0}
+.btn{background:#1a1a1a;color:#fff;padding:1rem 2.2rem;border:0;border-radius:50px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:.25s;text-align:center}
+.btn:hover{background:#d4a0a0;transform:translateY(-2px)}
+.btn-wa{background:#25D366;color:#fff;padding:1rem 2.2rem;border:0;border-radius:50px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:.25s;margin-top:0.5rem;text-align:center}
+.btn-wa:hover{background:#128C7E;transform:translateY(-2px)}
+.btn-wa:disabled{background:#ccc;cursor:not-allowed;transform:none}
+
+.categories{padding:3rem 2rem 5rem;max-width:1450px;margin:auto;text-align:center}
+.categories h2{font-family:Pacifico,cursive;font-size:2.5rem;margin-bottom:2rem}
+.category-wrapper{position:relative;max-width:1200px;margin:0 auto}
+.category-image{width:100%;display:block;border-radius:28px;box-shadow:0 12px 35px rgba(0,0,0,.12)}
+.category-buttons{position:absolute;bottom:5rem;left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;width:90%;padding:0 3%}
+.category-btn{background:#fff8f5;border:2px solid #d4a0a0;color:#1a1a1a;border-radius:50px;padding:1rem;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.15);transition:.25s}
+.category-btn:hover{background:#d4a0a0;color:#fff;transform:translateY(-4px)}
+
+footer{background:#1a1a1a;color:#fff;text-align:center;padding:2rem}.heart{color:#d4a0a0}
+
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.modal.show{display:flex}.modal-content{background:#fff;border-radius:24px;padding:2rem;max-width:600px;width:100%;max-height:92vh;overflow:auto;position:relative}
+.close{position:absolute;right:1.2rem;top:.7rem;font-size:2rem;cursor:pointer;color:#d4a0a0}
+.modal h3{font:2rem Pacifico;margin-bottom:.4rem;text-align:center}.modal-price{font-size:1.5rem;color:#d4a0a0;font-weight:700;text-align:center}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.field{margin-top:1rem}.field.full{grid-column:1/-1}
+label{display:block;font-weight:600;font-size:.9rem;margin-bottom:.35rem}
+input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-radius:10px;background:#fdf5f2;font:inherit}
+.quantity{display:flex;align-items:center;gap:.7rem;justify-content:center}.quantity button{width:40px;height:40px;border:0;border-radius:50%;background:#d4a0a0;color:#fff;font-size:1.3rem;cursor:pointer}
+
+.info-box{background:#fdf5f2;border:2px solid #d4a0a0;border-radius:10px;padding:1rem;text-align:center;color:#555;font-size:.95rem;margin-top:.5rem}
+.info-box strong{color:#1a1a1a;display:block;margin-bottom:.3rem;font-size:1rem}
+
+.total{margin-top:1rem;padding:1rem;background:#f5e6e0;border-radius:12px;font-size:1.2rem;font-weight:700;text-align:center}
+.status{margin-top:1rem;padding:1.5rem;border-radius:12px;display:none;text-align:center;line-height:1.5;background:#fff;border:2px solid #d4a0a0}
+.note{font-size:.82rem;color:#777;margin-top:.7rem;text-align:center}
+
+.whatsapp-float{position:fixed;bottom:30px;right:30px;width:60px;height:60px;background:#d4a0a0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(212,160,160,.4);cursor:pointer;transition:all 0.3s;z-index:999;text-decoration:none}
+.whatsapp-float:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(212,160,160,.6);background:#1a1a1a}
+.whatsapp-float svg{width:32px;height:32px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* RESPONSIVE MEJORADO PARA MÓVIL */
+@media(max-width:800px){
+    /* Header compacto */
+    header{padding:0.8rem 1rem}
+    .logo{font-size:1.5rem}
+    nav a{margin-left:0.7rem;font-size:.85rem}
+    
+    /* Hero más compacto */
+    .hero{padding:3rem 1rem}
+    .hero h1{font-size:2.2rem}
+    .tagline{font-size:1rem}
+    
+    /* Categorías en una columna */
+    .categories{padding:2rem 1rem 4rem}
+    .categories h2{font-size:1.8rem;margin-bottom:1.5rem}
+    .category-wrapper{max-width:100%}
+    .category-image{border-radius:15px}
+    
+    /* Botones debajo de la imagen, uno debajo del otro en móviles muy chicos */
+    .category-buttons{
+        position:relative;
+        bottom:auto;
+        left:auto;
+        transform:none;
+        margin-top:1.5rem;
+        padding:0;
+        width:100%;
+        grid-template-columns:1fr 1fr;
+        gap:0.8rem
+    }
+    
+    .category-btn{
+        padding:0.9rem;
+        font-size:0.9rem;
+        border-radius:40px
+    }
+    
+    /* Modal optimizado para móvil */
+    .modal{padding:0.5rem}
+    .modal-content{
+        padding:1.5rem;
+        border-radius:18px;
+        max-height:95vh
+    }
+    .modal h3{font-size:1.5rem}
+    .modal-price{font-size:1.2rem}
+    #productIcon{font-size:3rem}
+    
+    /* Formulario en una columna */
+    .form-grid{grid-template-columns:1fr;gap:0.8rem}
+    .field{margin-top:0.8rem}
+    .field.full{grid-column:auto}
+    
+    input,select,textarea{
+        padding:0.7rem;
+        font-size:0.9rem
+    }
+    
+    /* Botones de cantidad más chicos */
+    .quantity button{
+        width:35px;
+        height:35px;
+        font-size:1.1rem
+    }
+    
+    /* Info box más compacta */
+    .info-box{
+        padding:0.8rem;
+        font-size:0.85rem
+    }
+    .info-box strong{font-size:0.9rem}
+    
+    /* Total y botones */
+    .total{font-size:1rem;padding:0.8rem}
+    .btn{
+        padding:0.9rem 1.5rem;
+        font-size:0.95rem
+    }
+    .btn-wa{
+        padding:0.9rem 1.5rem;
+        font-size:0.95rem
+    }
+    
+    /* Status de pasos */
+    .status{
+        padding:1rem;
+        font-size:0.9rem
+    }
+    .status h4{font-size:1.1rem}
+    .status p{font-size:0.85rem}
+    
+    /* WhatsApp flotante más chico */
+    .whatsapp-float{
+        bottom:20px;
+        right:20px;
+        width:50px;
+        height:50px
+    }
+    .whatsapp-float svg{
+        width:26px;
+        height:26px
+    }
+}
+
+/* Para celulares muy chicos (menos de 480px) */
+@media(max-width:480px){
+    .category-buttons{
+        grid-template-columns:1fr
+    }
+    .category-btn{
+        padding:1rem;
+        font-size:1rem
+    }
+    .hero h1{font-size:1.8rem}
+    .modal-content{padding:1.2rem}
+    .close{font-size:1.5rem;top:0.5rem;right:1rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Boby<span>ka</span> ♥</div>
+  <nav>
+    <a href="#categorias">Productos</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Bobyka</h1>
+  <p class="tagline">Personalizamos tus ideas <span>♥</span> Creamos recuerdos</p>
+</section>
+
+<section class="categories" id="categorias">
+  <h2>Elegí qué querés personalizar</h2>
+  <div class="category-wrapper">
+    <img class="category-image" src="bobyka-categorias.png" alt="Categorías Bobyka" onerror="this.style.display='none'">
+    <div class="category-buttons">
+      <button class="category-btn" onclick="openProduct('Remera Sublimada',430,'👕','Algodón premium, diseño personalizado full print.')">REMERAS ♥</button>
+      <button class="category-btn" onclick="openProduct('Taza 11oz',250,'','Cerámica premium, sublimación full color.')">TAZAS ♥</button>
+      <button class="category-btn" onclick="openProduct('Gorra Personalizada',250,'🧢','Trucker o plana, bordado o sublimación.')">GORROS ♥</button>
+      <button class="category-btn" onclick="openProduct('Plato Decorativo',600,'🍽️','Cerámica blanca, sublimación de alta calidad.')">PLATOS ♥</button>
+    </div>
+  </div>
+</section>
+
+<footer id="contacto">Bobyka © 2026 | Hecho con <span class="heart">♥</span> en Uruguay</footer>
+
+<a href="https://wa.me/59898586123?text=Hola%20Bobyka!%20Necesito%20ayuda%20o%20tengo%20una%20consulta%20♥" class="whatsapp-float" target="_blank" title="Soporte y Ayuda">
+  <svg viewBox="0 0 24 24">
+    <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+  </svg>
+</a>
+
+<div class="modal" id="productModal">
+ <div class="modal-content">
+  <span class="close" onclick="closeProduct()">&times;</span>
+  <div id="productIcon" style="font-size:4rem;text-align:center"></div>
+  <h3 id="productTitle">Producto</h3>
+  <p id="productDescription" style="color:#777;text-align:center;margin-bottom:1rem"></p>
+  <p class="modal-price">$<span id="unitPrice">0</span> c/u</p>
+  
+  <div class="form-grid">
+   <div class="field"><label>Tu nombre</label><input id="customerName" required></div>
+   <div class="field"><label>Tu email</label><input id="customerEmail" type="email" required></div>
+   <div class="field"><label>Teléfono</label><input id="customerPhone" type="tel"></div>
+   <div class="field"><label>Cantidad</label>
+    <div class="quantity">
+      <button type="button" onclick="changeQty(-1)">−</button>
+      <strong id="qty">1</strong>
+      <button type="button" onclick="changeQty(1)">+</button>
+    </div>
+   </div>
+   <div class="field full" id="sizeField" style="display:none"><label>Talle</label>
+    <select id="size"><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select>
+   </div>
+   
+   <div class="field full">
+    <div class="info-box">
+      <strong> ¿Cómo envío mi diseño?</strong>
+      Una vez realizado el pago, podrás enviar tu logo o diseño directamente por WhatsApp en el Paso 2.
+    </div>
+   </div>
+
+   <div class="field full"><label>Ubicación y medidas del diseño</label>
+    <textarea id="details" rows="3" placeholder="Ej: Logo grande en el centro, chico en la tetilla izquierda, en la espalda, etc. (Especificá medidas aproximadas si es necesario)"></textarea>
+   </div>
+  </div>
+  
+  <div class="total">Total: $<span id="totalPrice">0</span></div>
+  
+  <button class="btn" style="width:100%;margin-top:1rem" onclick="prepareOrder()">Generar Pedido ♥</button>
+  <p class="note">Tu pedido se procesa una vez confirmado el pago y recibido el diseño.</p>
+  
+  <div id="status" class="status"></div>
+ </div>
+</div>
+
+<script>
+const NUMERO_SOPORTE = "59898586123";
+const NUMERO_PEDIDOS = "59899417913";
+
+const mpLinks = {
+    'Remera Sublimada': 'https://mpago.la/2UKXfmb',
+    'Taza 11oz': 'https://mpago.la/2egM7P6',
+    'Gorra Personalizada': 'https://mpago.la/2JSFGgi',
+    'Plato Decorativo': 'https://mpago.la/19GAMto'
+};
+
+let current={name:'',price:0,qty:1};
+let countdownTimer = null;
+const money=n=>Number(n).toLocaleString('es-UY');
+
+function openProduct(name,price,icon,description){
+ current={name,price,qty:1};
+ document.getElementById('productTitle').textContent=name;
+ document.getElementById('productDescription').textContent=description;
+ document.getElementById('productIcon').textContent=icon;
+ document.getElementById('unitPrice').textContent=money(price);
+ document.getElementById('qty').textContent=1;
+ document.getElementById('sizeField').style.display=name.includes('Remera')?'block':'none';
+ document.getElementById('status').style.display='none';
+ if(countdownTimer) clearInterval(countdownTimer);
+ updateTotal();
+ document.getElementById('productModal').classList.add('show');
+}
+
+function closeProduct(){ 
+  document.getElementById('productModal').classList.remove('show');
+  if(countdownTimer) clearInterval(countdownTimer);
+}
+
+function changeQty(n){
+  current.qty=Math.max(1,current.qty+n);
+  document.getElementById('qty').textContent=current.qty;
+  updateTotal();
+}
+
+function updateTotal(){ document.getElementById('totalPrice').textContent=money(current.price*current.qty); }
+
+function prepareOrder(){
+ const name=document.getElementById('customerName').value.trim();
+ const email=document.getElementById('customerEmail').value.trim();
+ const phone=document.getElementById('customerPhone').value.trim();
+ const details=document.getElementById('details').value.trim();
+ const size=document.getElementById('size').value;
+ 
+ if(!name||!email){alert('Completá nombre y email ♥');return}
+
+ const total = current.price * current.qty;
+ const mpLink = mpLinks[current.name];
+ 
+ const waMessage = `Hola Bobyka! ♥ Ya realicé el pago de mi pedido. Adjunto comprobante y diseño.%0A%0A` +
+                   ` *Producto:* ${current.name}%0A` +
+                   `🔢 *Cantidad:* ${current.qty}%0A` +
+                   `💰 *Total pagado:* $${money(total)}%0A` +
+                   `👤 *Nombre:* ${name}%0A` +
+                   ` *Email:* ${email}%0A` +
+                   `📱 *Teléfono:* ${phone}%0A` +
+                   (current.name.includes('Remera') ? `📏 *Talle:* ${size}%0A` : '') +
+                   ` *Ubicación/Medidas:* ${details || 'A coordinar'}`;
+                   
+ const waUrl = `https://wa.me/${NUMERO_PEDIDOS}?text=${waMessage}`;
+
+ const status = document.getElementById('status');
+ status.style.display = 'block';
+ 
+ // Inicialmente el botón de WhatsApp está deshabilitado
+ status.innerHTML = `
+   <div style="text-align:left; padding: 0.5rem;">
+       <h4 style="color:#d4a0a0; margin-bottom:1rem; font-size:1.2rem; text-align:center;">¡Pedido generado! Seguì estos pasos:</h4>
+
+       <div style="margin-bottom: 1.5rem;">
+           <strong style="background:#d4a0a0; color:#fff; padding:2px 10px; border-radius:12px; font-size:0.9rem;">PASO 1</strong>
+           <p style="margin: 0.5rem 0; font-size:0.95rem;">Realizá el pago de <strong>$${money(total)}</strong> en Mercado Pago:</p>
+           <a href="${mpLink}" target="_blank" class="btn" style="display:block; font-size:1rem;" onclick="startCountdown()">Pagar con Mercado Pago ♥</a>
+       </div>
+
+       <div style="border-top: 1px dashed #ccc; padding-top: 1.5rem;">
+           <strong style="background:#25D366; color:#fff; padding:2px 10px; border-radius:12px; font-size:0.9rem;">PASO 2</strong>
+           <p style="margin: 0.5rem 0; font-size:0.95rem;">Una vez pagado, enviá el <strong>comprobante y tu diseño</strong> por WhatsApp:</p>
+           <div id="waButtonContainer">
+               <button class="btn-wa" id="waButton" disabled style="display:block; font-size:1rem; width:100%;">
+                   🔍 Chequeando pago... <span id="countdown">45</span>s
+               </button>
+           </div>
+           <p id="waInstructions" style="display:none; margin-top:0.5rem; font-size:0.85rem; color:#555;">
+               Comprobá el pago manualmente adjuntando comprobante de pago de Mercado Pago
+           </p>
+       </div>
+   </div>
+ `;
+ 
+ // Guardar la URL de WhatsApp para usarla después
+ status.dataset.waUrl = waUrl;
+}
+
+function startCountdown(){
+  let seconds = 45;
+  const countdownEl = document.getElementById('countdown');
+  const waButton = document.getElementById('waButton');
+  const waInstructions = document.getElementById('waInstructions');
+  const waUrl = document.getElementById('status').dataset.waUrl;
+  
+  if(countdownTimer) clearInterval(countdownTimer);
+  
+  countdownTimer = setInterval(() => {
+    seconds--;
+    if(seconds > 0){
+      countdownEl.textContent = seconds;
+    } else {
+      clearInterval(countdownTimer);
+      // Activar el botón
+      waButton.disabled = false;
+      waButton.innerHTML = 'Enviar comprobante y diseño por WhatsApp';
+      waButton.onclick = () => { window.open(waUrl, '_blank'); };
+      waButton.style.cursor = 'pointer';
+      waInstructions.style.display = 'block';
+    }
+  }, 1000);
+}
+
+window.onclick=e=>{if(e.target===document.getElementById('productModal'))closeProduct()}
+</script>
+</body>
+</html>

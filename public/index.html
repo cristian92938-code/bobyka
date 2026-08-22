@@ -1,433 +1,115 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bobyka - Personalizamos tus ideas</title>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Bobyka: productos personalizados en Uruguay. Tazas, remeras, gorros, platos y cantimploras. Convertimos tus ideas en regalos únicos.">
+<meta name="theme-color" content="#d39a9f">
+<title>Bobyka ♥ | Personalizamos tus ideas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+:root{--pink:#d39a9f;--pink2:#efd6d8;--cream:#fff8f6;--ink:#171717;--muted:#686363;--white:#fff;--shadow:0 18px 45px rgba(30,15,18,.10);--radius:24px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Poppins,sans-serif;background:#f5e6e0;color:#1a1a1a;line-height:1.6}
-header{background:#fff;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(212,160,160,.2)}
-.logo{font-family:Pacifico,cursive;font-size:2rem}.logo span{color:#d4a0a0}
-nav a{color:#1a1a1a;text-decoration:none;margin-left:2rem;font-weight:500}
-.hero{text-align:center;padding:5rem 2rem;background:linear-gradient(135deg,#f5e6e0,#e8c4c4)}
-.hero h1{font-family:Pacifico,cursive;font-size:3.5rem}.tagline{font-size:1.3rem;margin:1rem 0 2rem;color:#555}.tagline span{color:#d4a0a0}
-.btn{background:#1a1a1a;color:#fff;padding:1rem 2.2rem;border:0;border-radius:50px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:.25s;text-align:center}
-.btn:hover{background:#d4a0a0;transform:translateY(-2px)}
-.categories{padding:3rem 2rem 5rem;max-width:1450px;margin:auto;text-align:center}
-.categories h2{font-family:Pacifico,cursive;font-size:2.5rem;margin-bottom:2rem}
-.category-wrapper{position:relative;max-width:1200px;margin:0 auto}
-.category-image{width:100%;display:block;border-radius:28px;box-shadow:0 12px 35px rgba(0,0,0,.12)}
-.category-buttons{position:absolute;bottom:5rem;left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;width:90%;padding:0 3%}
-.category-btn{background:#fff8f5;border:2px solid #d4a0a0;color:#1a1a1a;border-radius:50px;padding:1rem;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.15);transition:.25s}
-.category-btn:hover{background:#d4a0a0;color:#fff;transform:translateY(-4px)}
-
-/* CARRUSEL GALERÍA */
-.gallery{padding:4rem 2rem;background:#fff;text-align:center;overflow:hidden}
-.gallery h2{font-family:Pacifico,cursive;font-size:2.5rem;margin-bottom:2rem;color:#1a1a1a}
-.carousel-container{position:relative;max-width:900px;margin:0 auto;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.15);background:#1a1a1a}
-.carousel-track{display:flex;transition:transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);will-change:transform}
-.carousel-slide{min-width:100%;position:relative;aspect-ratio:4/3;background:#f5e6e0}
-.carousel-slide img{width:100%;height:100%;object-fit:cover;display:block}
-.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(212,160,160,.9);border:none;color:#fff;width:50px;height:50px;border-radius:50%;font-size:1.5rem;cursor:pointer;transition:0.3s;display:flex;align-items:center;justify-content:center;z-index:10}
-.carousel-btn:hover{background:#1a1a1a;transform:translateY(-50%) scale(1.1)}
-.carousel-btn.prev{left:15px}
-.carousel-btn.next{right:15px}
-.carousel-dots{display:flex;justify-content:center;gap:10px;margin-top:1.5rem}
-.carousel-dot{width:12px;height:12px;border-radius:50%;background:#e8c4c4;border:none;cursor:pointer;transition:0.3s}
-.carousel-dot.active{background:#d4a0a0;transform:scale(1.3)}
-.carousel-dot:hover{background:#d4a0a0}
-.carousel-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff;padding:1.5rem;text-align:left;font-size:0.95rem}
-.carousel-caption strong{display:block;font-size:1.1rem;margin-bottom:0.3rem}
-
-footer{background:#1a1a1a;color:#fff;text-align:center;padding:2rem}.heart{color:#d4a0a0}
-
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;padding:1rem}
-.modal.show{display:flex}.modal-content{background:#fff;border-radius:24px;padding:2rem;max-width:600px;width:100%;max-height:92vh;overflow:auto;position:relative}
-.close{position:absolute;right:1.2rem;top:.7rem;font-size:2rem;cursor:pointer;color:#d4a0a0}
-.modal h3{font:2rem Pacifico;margin-bottom:.4rem;text-align:center}.modal-price{font-size:1.5rem;color:#d4a0a0;font-weight:700;text-align:center}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.field{margin-top:1rem}.field.full{grid-column:1/-1}
-label{display:block;font-weight:600;font-size:.9rem;margin-bottom:.35rem}
-input,select,textarea{width:100%;padding:.8rem;border:2px solid #e8c4c4;border-radius:10px;background:#fdf5f2;font:inherit}
-.quantity{display:flex;align-items:center;gap:.7rem;justify-content:center}.quantity button{width:40px;height:40px;border:0;border-radius:50%;background:#d4a0a0;color:#fff;font-size:1.3rem;cursor:pointer}
-
-.info-box{background:#fdf5f2;border:2px solid #d4a0a0;border-radius:10px;padding:1rem;text-align:center;color:#555;font-size:.95rem;margin-top:.5rem}
-.info-box strong{color:#1a1a1a;display:block;margin-bottom:.3rem;font-size:1rem}
-
-.total{margin-top:1rem;padding:1rem;background:#f5e6e0;border-radius:12px;font-size:1.2rem;font-weight:700;text-align:center}
-.note{font-size:.82rem;color:#777;margin-top:.7rem;text-align:center}
-
-.whatsapp-float{position:fixed;bottom:30px;right:30px;width:60px;height:60px;background:#d4a0a0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(212,160,160,.4);cursor:pointer;transition:all 0.3s;z-index:999;text-decoration:none}
-.whatsapp-float:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(212,160,160,.6);background:#1a1a1a}
-.whatsapp-float svg{width:32px;height:32px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
-/* CARRITO */
-.cart-icon{position:fixed;top:80px;right:20px;background:#1a1a1a;color:#fff;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.2);z-index:998;transition:.3s}
-.cart-icon:hover{background:#d4a0a0;transform:scale(1.1)}
-.cart-count{position:absolute;top:-5px;right:-5px;background:#d4a0a0;color:#fff;border-radius:50%;width:25px;height:25px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
-
-/* RESPONSIVE */
-@media(max-width:800px){
-    header{padding:0.8rem 1rem}
-    .logo{font-size:1.5rem}
-    nav a{margin-left:0.7rem;font-size:.85rem}
-    .hero{padding:3rem 1rem}
-    .hero h1{font-size:2.2rem}
-    .tagline{font-size:1rem}
-    .categories{padding:2rem 1rem 4rem}
-    .categories h2{font-size:1.8rem;margin-bottom:1.5rem}
-    .category-wrapper{max-width:100%}
-    .category-image{border-radius:15px}
-    .category-buttons{position:relative;bottom:auto;left:auto;transform:none;margin-top:1.5rem;padding:0;width:100%;grid-template-columns:1fr 1fr;gap:0.8rem}
-    .category-btn{padding:0.9rem;font-size:0.9rem;border-radius:40px}
-    .modal{padding:0.5rem}
-    .modal-content{padding:1.5rem;border-radius:18px;max-height:95vh}
-    .modal h3{font-size:1.5rem}
-    .modal-price{font-size:1.2rem}
-    #productIcon{font-size:3rem}
-    .form-grid{grid-template-columns:1fr;gap:0.8rem}
-    .field{margin-top:0.8rem}
-    .field.full{grid-column:auto}
-    input,select,textarea{padding:0.7rem;font-size:0.9rem}
-    .quantity button{width:35px;height:35px;font-size:1.1rem}
-    .info-box{padding:0.8rem;font-size:0.85rem}
-    .info-box strong{font-size:0.9rem}
-    .total{font-size:1rem;padding:0.8rem}
-    .btn{padding:0.9rem 1.5rem;font-size:0.95rem}
-    .whatsapp-float{bottom:20px;right:20px;width:50px;height:50px}
-    .whatsapp-float svg{width:26px;height:26px}
-    .gallery{padding:2rem 1rem}
-    .gallery h2{font-size:1.8rem}
-    .carousel-btn{width:40px;height:40px;font-size:1.2rem}
-    .carousel-btn.prev{left:8px}
-    .carousel-btn.next{right:8px}
-    .carousel-caption{padding:1rem;font-size:0.85rem}
-    .cart-icon{top:70px;right:10px;width:50px;height:50px}
-}
-@media(max-width:480px){
-    .category-buttons{grid-template-columns:1fr}
-    .category-btn{padding:1rem;font-size:1rem}
-    .hero h1{font-size:1.8rem}
-    .modal-content{padding:1.2rem}
-    .close{font-size:1.5rem;top:0.5rem;right:1rem}
-}
+html{scroll-behavior:smooth}
+body{font-family:Poppins,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}
+.container{width:min(1180px,calc(100% - 32px));margin:auto}
+.topbar{background:var(--ink);color:#fff;text-align:center;font-size:.82rem;padding:8px 16px;letter-spacing:.02em}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid #eee;padding:13px 0}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:20px}.logo{font:2rem Pacifico}.logo span{color:var(--pink)}
+nav{display:flex;align-items:center;gap:24px}nav a{font-weight:600;font-size:.94rem}nav a:hover{color:var(--pink)}
+.nav-actions{display:flex;align-items:center;gap:10px}.cart{position:relative;border:0;background:var(--ink);color:#fff;width:44px;height:44px;border-radius:50%;cursor:pointer}.cart-count{position:absolute;right:-4px;top:-4px;background:var(--pink);width:21px;height:21px;border-radius:50%;font-size:.72rem;font-weight:800;display:grid;place-items:center}
+.menu{display:none;border:0;background:#f5eeee;width:44px;height:44px;border-radius:12px;cursor:pointer;font-size:1.3rem}
+.hero{padding:78px 0 64px;background:radial-gradient(circle at 15% 20%,#fff 0 16%,transparent 37%),linear-gradient(135deg,#f8e8e5,#efd4d5)}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:60px}.eyebrow{font-size:.82rem;text-transform:uppercase;letter-spacing:.16em;font-weight:800;color:#9d666b;margin-bottom:12px}.hero h1{font:clamp(3rem,7vw,6rem)/1 Pacifico;margin-bottom:18px}.hero h1 span{color:var(--pink)}.hero p{font-size:1.15rem;color:#555;max-width:650px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--ink);color:#fff;border:0;border-radius:999px;padding:13px 22px;font-weight:800;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-2px);background:var(--pink)}.btn.light{background:#fff;color:var(--ink);border:1px solid #ead8d9}.btn.whatsapp{background:#25d366}.hero-card{background:#fff;border-radius:32px;padding:12px;box-shadow:var(--shadow);transform:rotate(2deg)}.hero-card img{display:block;width:100%;border-radius:24px}.hero-note{text-align:center;font-size:.8rem;color:#777;padding:10px}
+section{padding:78px 0}.section-head{text-align:center;margin-bottom:34px}.section-head .eyebrow{margin-bottom:5px}.section-head h2{font:2.5rem Pacifico}.section-head p{color:var(--muted);max-width:650px;margin:8px auto 0}
+.products{background:#fff}.product-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}.product-card{border:1px solid #eee;border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 7px 25px rgba(30,15,18,.06);transition:.25s}.product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}.product-art{height:190px;background:linear-gradient(145deg,#f8e7e4,#f1d6d8);display:grid;place-items:center;overflow:hidden}.product-art img{width:100%;height:100%;object-fit:cover}.product-icon{font-size:4rem}.product-body{padding:17px}.product-body h3{font-size:1rem}.product-body p{color:#777;font-size:.82rem;min-height:44px;margin:5px 0 12px}.price{font-weight:800;font-size:1.15rem;margin-bottom:11px}.product-card .btn{width:100%;padding:10px 14px;font-size:.85rem}
+.benefits{background:var(--cream)}.benefit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.benefit{background:#fff;border-radius:20px;padding:24px;text-align:center;border:1px solid #f0e1e1}.benefit-icon{font-size:2rem;margin-bottom:8px}.benefit h3{font-size:1rem}.benefit p{font-size:.84rem;color:#777;margin-top:5px}
+.process{background:#fff}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.step{position:relative;padding:25px;border-radius:20px;background:#fdf5f3;border:1px solid #f0dede}.num{width:38px;height:38px;border-radius:50%;background:var(--pink);color:#fff;display:grid;place-items:center;font-weight:800;margin-bottom:12px}.step h3{font-size:1rem}.step p{font-size:.85rem;color:#666;margin-top:5px}
+.gallery{background:var(--ink);color:#fff}.gallery .section-head p{color:#ccc}.carousel{position:relative;max-width:920px;margin:auto;border-radius:25px;overflow:hidden;background:#111;box-shadow:0 20px 55px rgba(0,0,0,.3)}.track{display:flex;transition:transform .45s ease}.slide{min-width:100%;aspect-ratio:16/10;position:relative;background:#222}.slide img{width:100%;height:100%;object-fit:cover;display:block}.caption{position:absolute;inset:auto 0 0;padding:60px 24px 20px;background:linear-gradient(transparent,rgba(0,0,0,.82))}.caption strong{display:block;font-size:1.1rem}.arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border:0;border-radius:50%;background:#fff;color:#111;font-size:1.5rem;cursor:pointer;z-index:2}.arrow.prev{left:15px}.arrow.next{right:15px}.dots{display:flex;justify-content:center;gap:8px;padding:15px}.dot{width:9px;height:9px;border:0;border-radius:50%;background:#777;cursor:pointer}.dot.active{background:var(--pink);transform:scale(1.3)}
+.business{background:linear-gradient(135deg,#f4dedf,#fff8f6)}.business-box{display:grid;grid-template-columns:1fr auto;align-items:center;gap:30px;background:#fff;padding:40px;border-radius:28px;box-shadow:var(--shadow)}.business-box h2{font:2.2rem Pacifico}.business-box p{color:#666;max-width:700px;margin-top:7px}.business-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.tag{padding:7px 12px;border-radius:999px;background:#f8e8e8;font-size:.8rem;font-weight:700}
+.faq{background:#fff}.faq-grid{max-width:850px;margin:auto}.faq-item{border-bottom:1px solid #eee}.faq-q{width:100%;padding:18px 0;background:transparent;border:0;display:flex;justify-content:space-between;cursor:pointer;font-weight:800;text-align:left}.faq-a{display:none;color:#666;padding:0 0 18px;font-size:.9rem}.faq-item.open .faq-a{display:block}
+footer{background:#171717;color:#fff;padding:48px 0 25px}.footer-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:35px}.footer-logo{font:2rem Pacifico}.footer-logo span{color:var(--pink)}footer p,footer a{color:#bbb;font-size:.85rem}footer h3{margin-bottom:10px}.copyright{text-align:center;border-top:1px solid #333;margin-top:35px;padding-top:20px;font-size:.8rem;color:#888}
+.whatsapp{position:fixed;right:22px;bottom:22px;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;z-index:90;box-shadow:0 8px 25px rgba(0,0,0,.2);font-size:1.55rem}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;padding:16px}.modal.show{display:flex}.modal-box{background:#fff;width:min(650px,100%);max-height:94vh;overflow:auto;border-radius:25px;padding:28px;position:relative}.close{position:absolute;right:18px;top:10px;border:0;background:none;font-size:2rem;color:#999;cursor:pointer}.modal h3{font:2rem Pacifico;text-align:center}.modal-price{text-align:center;color:var(--pink);font-weight:800;font-size:1.35rem;margin:4px 0 18px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field.full{grid-column:1/-1}.field label{display:block;font-weight:700;font-size:.83rem;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;border:1px solid #e6d4d5;border-radius:12px;padding:11px;background:#fffafa;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--pink)}.quantity{display:flex;align-items:center;gap:12px}.quantity button{width:38px;height:38px;border:0;border-radius:50%;background:var(--pink);color:#fff;cursor:pointer;font-size:1.2rem}.total{margin-top:16px;padding:15px;background:#f8e8e8;border-radius:14px;text-align:center;font-weight:800}.modal-info{background:#f7f4f4;border-radius:12px;padding:12px;color:#666;font-size:.82rem;margin-top:13px}.modal .btn{width:100%;margin-top:13px}
+@media(max-width:1000px){.hero-grid{grid-template-columns:1fr;gap:35px}.hero-card{max-width:500px;margin:auto}.product-grid{grid-template-columns:repeat(3,1fr)}.benefit-grid,.steps{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.topbar{font-size:.72rem}.nav{padding:0 0}.menu{display:block}nav{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;padding:16px;box-shadow:0 10px 20px #0001;flex-direction:column;align-items:flex-start}nav.open{display:flex}.hero{padding:55px 0 45px}.hero h1{font-size:3.7rem}.hero p{font-size:1rem}.section-head h2{font-size:2rem}.product-grid{grid-template-columns:1fr 1fr}.product-art{height:150px}.benefit-grid,.steps{grid-template-columns:1fr}.business-box{grid-template-columns:1fr;padding:27px}.business-box h2{font-size:1.8rem}.footer-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.slide{aspect-ratio:4/3}.caption{padding:50px 15px 14px;font-size:.78rem}.arrow{width:40px;height:40px}.whatsapp{width:52px;height:52px;right:16px;bottom:16px}}
+@media(max-width:430px){.container{width:min(100% - 22px,1180px)}.product-grid{grid-template-columns:1fr}.product-art{height:210px}.nav-actions .btn{display:none}}
 </style>
 </head>
 <body>
-
+<div class="topbar">🇺🇾 Hecho en Uruguay · Personalización individual, grupos y empresas</div>
 <header>
-  <div class="logo">Boby<span>ka</span> ♥</div>
-  <nav>
-    <a href="#categorias">Productos</a>
-    <a href="#galeria">Galería</a>
-    <a href="#contacto">Contacto</a>
-  </nav>
+  <div class="container nav">
+    <a class="logo" href="/">Boby<span>ka</span> ♥</a>
+    <nav id="nav"><a href="#productos">Productos</a><a href="#como-funciona">Cómo funciona</a><a href="#galeria">Galería</a><a href="#empresas">Empresas</a><a href="#contacto">Contacto</a></nav>
+    <div class="nav-actions"><button class="cart" onclick="verCarrito()" aria-label="Abrir carrito">🛒<span class="cart-count" id="cartCount">0</span></button><button class="menu" onclick="toggleMenu()" aria-label="Menú">☰</button></div>
+  </div>
 </header>
 
-<!-- Ícono del carrito -->
-<div class="cart-icon" onclick="verCarrito()">
-  🛒
-  <div class="cart-count" id="cartCount">0</div>
-</div>
+<main>
+<section class="hero"><div class="container hero-grid">
+  <div><div class="eyebrow">Diseños que cuentan historias</div><h1>Boby<span>ka</span> ♥</h1><p>Personalizamos tus ideas y las convertimos en recuerdos. Elegí un producto, contanos qué querés y nosotros hacemos el resto.</p>
+  <div class="hero-actions"><a class="btn" href="#productos">Ver productos →</a><a class="btn whatsapp" href="https://wa.me/59898586123?text=Hola%20Bobyka!%20Quiero%20consultar%20por%20un%20producto%20personalizado%20♥" target="_blank" rel="noopener">💬 Consultar por WhatsApp</a></div></div>
+  <div class="hero-card"><img src="bobyka-categorias.png" alt="Productos personalizados Bobyka"><div class="hero-note">Tu idea puede convertirse en algo único.</div></div>
+</div></section>
 
-<section class="hero">
-  <h1>Bobyka</h1>
-  <p class="tagline">Personalizamos tus ideas <span>♥</span> Creamos recuerdos</p>
-</section>
+<section class="products" id="productos"><div class="container"><div class="section-head"><div class="eyebrow">Elegí tu producto</div><h2>Personalizá lo que quieras ♥</h2><p>Tenemos opciones para regalos, uso personal, equipos, clubes y empresas.</p></div>
+<div class="product-grid">
+  <article class="product-card"><div class="product-art"><img src="gallery/remeras.png" alt="Remeras personalizadas"></div><div class="product-body"><h3>Remeras</h3><p>Algodón premium, diseño personalizado.</p><div class="price">$430</div><button class="btn" onclick="openProduct('Remera Sublimada',430,'','Algodón premium, diseño personalizado full print.')">Personalizar</button></div></article>
+  <article class="product-card"><div class="product-art"><img src="gallery/taza.png" alt="Tazas personalizadas"></div><div class="product-body"><h3>Tazas</h3><p>Cerámica premium, full color.</p><div class="price">$250</div><button class="btn" onclick="openProduct('Taza 11oz',250,'','Cerámica premium, sublimación full color.')">Personalizar</button></div></article>
+  <article class="product-card"><div class="product-art"><img src="gallery/gorro.png" alt="Gorros personalizados"></div><div class="product-body"><h3>Gorros</h3><p>Personalizados para vos, tu grupo o equipo.</p><div class="price">$250</div><button class="btn" onclick="openProduct('Gorra Personalizada',250,'','Trucker o plana, bordado o sublimación.')">Personalizar</button></div></article>
+  <article class="product-card"><div class="product-art"><img src="gallery/platos.png" alt="Platos personalizados"></div><div class="product-body"><h3>Platos</h3><p>Decorativos y personalizados.</p><div class="price">$510</div><button class="btn" onclick="openProduct('Plato Decorativo',510,'','Cerámica blanca, sublimación de alta calidad.')">Personalizar</button></div></article>
+  <article class="product-card"><div class="product-art"><span class="product-icon">💧</span></div><div class="product-body"><h3>Cantimploras</h3><p>Acero inoxidable, diseño personalizado.</p><div class="price">$390</div><button class="btn" onclick="openProduct('Cantimplora',390,'💧','Acero inoxidable, diseño personalizado.')">Personalizar</button></div></article>
+</div></div></section>
 
-<section class="categories" id="categorias">
-  <h2>Elegí qué querés personalizar</h2>
-  <div class="category-wrapper">
-    <img class="category-image" src="bobyka-categorias.png" alt="Categorías Bobyka" onerror="this.style.display='none'">
-    <div class="category-buttons">
-      <button class="category-btn" onclick="openProduct('Remera Sublimada',430,'','Algodón premium, diseño personalizado full print.')">REMERAS ♥</button>
-      <button class="category-btn" onclick="openProduct('Taza 11oz',250,'','Cerámica premium, sublimación full color.')">TAZAS ♥</button>
-      <button class="category-btn" onclick="openProduct('Gorra Personalizada',250,'🧢','Trucker o plana, bordado o sublimación.')">GORROS ♥</button>
-      <button class="category-btn" onclick="openProduct('Plato Decorativo',510,'🍽️','Cerámica blanca, sublimación de alta calidad.')">PLATOS ♥</button>
-      <button class="category-btn" onclick="openProduct('Cantimplora',390,'💧','Acero inoxidable, diseño personalizado.')">CANTIMPLORAS ♥</button>
-    </div>
-  </div>
-</section>
+<section class="benefits"><div class="container"><div class="section-head"><div class="eyebrow">Bobyka</div><h2>¿Por qué elegirnos?</h2></div><div class="benefit-grid">
+<div class="benefit"><div class="benefit-icon">🎨</div><h3>Diseño personalizado</h3><p>Tu idea, tu foto, tu frase o tu logo.</p></div><div class="benefit"><div class="benefit-icon">🇺🇾</div><h3>Hecho en Uruguay</h3><p>Producción local y atención directa.</p></div><div class="benefit"><div class="benefit-icon">💬</div><h3>Atención cercana</h3><p>Te ayudamos a definir tu diseño antes de producir.</p></div><div class="benefit"><div class="benefit-icon">🎁</div><h3>Regalos únicos</h3><p>Convertí un momento especial en un recuerdo.</p></div>
+</div></div></section>
 
-<!-- CARRUSEL DE GALERÍA -->
-<section class="gallery" id="galeria">
-  <h2>Nuestros Trabajos ♥</h2>
-  
-  <div class="carousel-container">
-    <div class="carousel-track" id="carouselTrack">
-      <div class="carousel-slide">
-        <img src="trabajo1.jpg" onerror="this.src='https://placehold.co/900x675/f5e6e0/d4a0a0?text=Trabajo+1'" alt="Trabajo 1">
-        <div class="carousel-caption"><strong>Taza Personalizada</strong>Diseño: signo solar cáncer</div>
-      </div>
-      <div class="carousel-slide">
-        <img src="trabajo2.jpg" onerror="this.src='https://placehold.co/900x675/f5e6e0/d4a0a0?text=Trabajo+2'" alt="Trabajo 2">
-        <div class="carousel-caption"><strong>Taza Personalizada</strong>Diseño: Olimico FC</div>
-      </div>
-      <div class="carousel-slide">
-        <img src="trabajo3.jpg" onerror="this.src='https://placehold.co/900x675/f5e6e0/d4a0a0?text=Trabajo+3'" alt="Trabajo 3">
-        <div class="carousel-caption"><strong>Taza Personalizada</strong>Diseño: signo solar leo</div>
-      </div>
-      <div class="carousel-slide">
-        <img src="trabajo4.jpg" onerror="this.src='https://placehold.co/900x675/f5e6e0/d4a0a0?text=Trabajo+4'" alt="Trabajo 4">
-        <div class="carousel-caption"><strong>Taza Personalizada</strong>Diseño: stitch</div>
-      </div>
-      <div class="carousel-slide">
-        <img src="trabajo5.jpg" onerror="this.src='https://placehold.co/900x675/f5e6e0/d4a0a0?text=Trabajo+5'" alt="Trabajo 5">
-        <div class="carousel-caption"><strong>Cantimplora Personalizada</strong>Diseño dedicatoria personal</div>
-      </div>
-      <div class="carousel-slide">
-        <img src="trabajo6.jpg" onerror="this.src='https://placehold.co/900x675/f5e6e0/d4a0a0?text=Trabajo+6'" alt="Trabajo 6">
-        <div class="carousel-caption"><strong>Taza Personalizada</strong>Regalo empresarial</div>
-      </div>
-      <div class="carousel-slide">
-        <img src="trabajo7.jpg" onerror="this.src='https://placehold.co/900x675/f5e6e0/d4a0a0?text=Trabajo+7'" alt="Trabajo 7">
-        <div class="carousel-caption"><strong>Taza Personalizada</strong>Para tu grupo o empresa</div>
-      </div>
-      <div class="carousel-slide">
-        <img src="trabajo8.jpg" onerror="this.src='https://placehold.co/900x675/f5e6e0/d4a0a0?text=Trabajo+8'" alt="Trabajo 8">
-        <div class="carousel-caption"><strong>Taza Personalizada</strong>Creación única Bobyka</div>
-      </div>
-    </div>
-    
-    <button class="carousel-btn prev" onclick="moverCarrusel(-1)">‹</button>
-    <button class="carousel-btn next" onclick="moverCarrusel(1)">›</button>
-  </div>
-  
-  <div class="carousel-dots" id="carouselDots"></div>
-</section>
+<section class="process" id="como-funciona"><div class="container"><div class="section-head"><div class="eyebrow">Simple y directo</div><h2>¿Cómo funciona?</h2><p>En pocos pasos tu idea pasa de la pantalla a tus manos.</p></div><div class="steps">
+<div class="step"><div class="num">1</div><h3>Elegí el producto</h3><p>Seleccioná taza, remera, gorro, plato o cantimplora.</p></div><div class="step"><div class="num">2</div><h3>Contanos tu idea</h3><p>Indicá cantidades, talles y cómo querés el diseño.</p></div><div class="step"><div class="num">3</div><h3>Confirmá el pedido</h3><p>Agregalo al carrito y seguí las instrucciones de pago.</p></div><div class="step"><div class="num">4</div><h3>¡Lo hacemos realidad!</h3><p>Nos enviás el diseño y comenzamos a trabajar.</p></div>
+</div></div></section>
 
-<footer id="contacto">
-  Bobyka © 2026 | Hecho con <span class="heart">♥</span> en Uruguay<br>
-  <a href="terminos.html" style="color:#d4a0a0;text-decoration:none;margin:0 10px">Términos y Condiciones</a> | 
-  <a href="privacidad.html" style="color:#d4a0a0;text-decoration:none;margin:0 10px">Política de Privacidad</a>
-</footer>
+<section class="gallery" id="galeria"><div class="container"><div class="section-head"><div class="eyebrow">Trabajos reales</div><h2>Nuestros trabajos ♥</h2><p>Algunas de las personalizaciones que ya salieron de Bobyka.</p></div><div class="carousel"><div class="track" id="track">
+<div class="slide"><img src="trabajo1.jpg" alt="Taza personalizada signo Cáncer"><div class="caption"><strong>Taza personalizada</strong>Signo solar Cáncer</div></div>
+<div class="slide"><img src="trabajo2.jpg" alt="Taza personalizada Olímpico FC"><div class="caption"><strong>Olímpico FC</strong>Diseño personalizado para el club</div></div>
+<div class="slide"><img src="trabajo3.jpg" alt="Taza personalizada signo Leo"><div class="caption"><strong>Taza personalizada</strong>Signo solar Leo</div></div>
+<div class="slide"><img src="trabajo4.jpg" alt="Taza personalizada Stitch"><div class="caption"><strong>Taza personalizada</strong>Diseño Stitch</div></div>
+<div class="slide"><img src="trabajo5.jpg" alt="Cantimplora personalizada"><div class="caption"><strong>Cantimplora personalizada</strong>Dedicatoria personal</div></div>
+<div class="slide"><img src="trabajo6.jpg" alt="Regalo empresarial"><div class="caption"><strong>Regalo empresarial</strong>Personalización para empresas</div></div>
+<div class="slide"><img src="trabajo7.jpg" alt="Pedido para grupo"><div class="caption"><strong>Pedido para grupo</strong>Diseño personalizado</div></div>
+<div class="slide"><img src="trabajo8.jpg" alt="Creación Bobyka"><div class="caption"><strong>Creación Bobyka</strong>Una idea única</div></div>
+</div><button class="arrow prev" onclick="move(-1)" aria-label="Anterior">‹</button><button class="arrow next" onclick="move(1)" aria-label="Siguiente">›</button></div><div class="dots" id="dots"></div></div></section>
 
-<a href="https://wa.me/59898586123?text=Hola%20Bobyka!%20Necesito%20ayuda%20o%20tengo%20una%20consulta%20♥" class="whatsapp-float" target="_blank" title="Soporte y Ayuda">
-  <svg viewBox="0 0 24 24">
-    <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
-    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
-  </svg>
-</a>
+<section class="business" id="empresas"><div class="container"><div class="business-box"><div><div class="eyebrow">Pedidos grandes</div><h2>¿Sos empresa, club o grupo?</h2><p>Podemos preparar pedidos personalizados para equipos, instituciones, eventos, regalos empresariales y grupos. Consultanos por cantidades y diseños.</p><div class="business-tags"><span class="tag">Empresas</span><span class="tag">Clubes</span><span class="tag">Equipos</span><span class="tag">Eventos</span><span class="tag">Regalos</span></div></div><a class="btn whatsapp" href="https://wa.me/59898586123?text=Hola%20Bobyka!%20Quiero%20consultar%20por%20un%20pedido%20para%20empresa%2Fclub%2Fgrupo%20♥" target="_blank" rel="noopener">Cotizar pedido →</a></div></div></section>
 
-<div class="modal" id="productModal">
- <div class="modal-content">
-  <span class="close" onclick="closeProduct()">&times;</span>
-  <div id="productIcon" style="font-size:4rem;text-align:center"></div>
-  <h3 id="productTitle">Producto</h3>
-  <p id="productDescription" style="color:#777;text-align:center;margin-bottom:1rem"></p>
-  <p class="modal-price">$<span id="unitPrice">0</span> c/u</p>
-  
-  <div class="form-grid">
-   <div class="field"><label>Tu nombre *</label><input id="customerName" required></div>
-   <div class="field"><label>Tu email *</label><input id="customerEmail" type="email" required></div>
-   <div class="field"><label>Teléfono</label><input id="customerPhone" type="tel"></div>
-   <div class="field"><label>Cantidad</label>
-    <div class="quantity">
-      <button type="button" onclick="changeQty(-1)">−</button>
-      <strong id="qty">1</strong>
-      <button type="button" onclick="changeQty(1)">+</button>
-    </div>
-   </div>
-   <div class="field full" id="sizeField" style="display:none"><label>Talle</label>
-    <select id="size"><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select>
-   </div>
-   
-   <div class="field full">
-    <div class="info-box">
-      <strong> ¿Cómo envío mi diseño?</strong>
-      Una vez realizado el pago, podrás enviar tu logo o diseño directamente por WhatsApp en el Paso 2.
-    </div>
-   </div>
+<section class="faq"><div class="container"><div class="section-head"><div class="eyebrow">Ayuda</div><h2>Preguntas frecuentes</h2></div><div class="faq-grid">
+<div class="faq-item"><button class="faq-q">¿Puedo mandar mi propio diseño? <span>+</span></button><div class="faq-a">Sí. Al realizar el pedido podés indicarnos cómo querés el diseño y, una vez confirmado el pago, enviarlo por WhatsApp.</div></div>
+<div class="faq-item"><button class="faq-q">¿Hacen pedidos para empresas o clubes? <span>+</span></button><div class="faq-a">Sí. Para cantidades grandes recomendamos escribirnos por WhatsApp para coordinar diseño, cantidades y presupuesto.</div></div>
+<div class="faq-item"><button class="faq-q">¿Puedo pedir varias unidades? <span>+</span></button><div class="faq-a">Sí. Desde el producto elegís la cantidad que necesitás y el carrito calcula el total.</div></div>
+<div class="faq-item"><button class="faq-q">¿Cómo envío el comprobante de pago? <span>+</span></button><div class="faq-a">Desde el carrito podés abrir WhatsApp con el resumen del pedido y adjuntar allí el comprobante.</div></div>
+</div></div></section>
+</main>
 
-   <div class="field full"><label>Ubicación y medidas del diseño</label>
-    <textarea id="details" rows="3" placeholder="Ej: Logo grande en el centro, chico en la tetilla izquierda, en la espalda, etc."></textarea>
-   </div>
-  </div>
-  
-  <div class="total">Total: $<span id="totalPrice">0</span></div>
-  
-  <button class="btn" style="width:100%;margin-top:1rem" onclick="agregarAlCarrito()">Agregar al Carrito ♥</button>
-  <p class="note">Tu pedido se procesa una vez confirmado el pago y recibido el diseño.</p>
- </div>
-</div>
+<footer id="contacto"><div class="container"><div class="footer-grid"><div><div class="footer-logo">Boby<span>ka</span> ♥</div><p>Personalizamos tus ideas y creamos recuerdos.</p></div><div><h3>Contacto</h3><p>WhatsApp: <a href="https://wa.me/59898586123" target="_blank" rel="noopener">098 586 123</a></p><p>Atención personalizada en Uruguay.</p></div><div><h3>Información</h3><p><a href="/terminos.html">Términos y condiciones</a></p><p><a href="/privacidad.html">Política de privacidad</a></p></div></div><div class="copyright">Bobyka © 2026 · Hecho con <span style="color:var(--pink)">♥</span> en Uruguay</div></div></footer>
+<a class="whatsapp btn" href="https://wa.me/59898586123?text=Hola%20Bobyka!%20Quiero%20hacer%20una%20consulta%20♥" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
 
+<div class="modal" id="modal"><div class="modal-box"><button class="close" onclick="closeProduct()" aria-label="Cerrar">×</button><div id="productIcon" style="text-align:center;font-size:3.5rem"></div><h3 id="productTitle">Producto</h3><p id="productDescription" style="text-align:center;color:#777"></p><div class="modal-price">$<span id="unitPrice">0</span> c/u</div><div class="form-grid"><div class="field"><label for="customerName">Nombre *</label><input id="customerName" autocomplete="name"></div><div class="field"><label for="customerEmail">Email *</label><input id="customerEmail" type="email" autocomplete="email"></div><div class="field"><label for="customerPhone">Teléfono</label><input id="customerPhone" type="tel" autocomplete="tel"></div><div class="field"><label>Cantidad</label><div class="quantity"><button onclick="changeQty(-1)">−</button><strong id="qty">1</strong><button onclick="changeQty(1)">+</button></div></div><div class="field full" id="sizeField" style="display:none"><label for="size">Talle</label><select id="size"><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select></div><div class="field full"><label for="details">¿Cómo querés tu diseño?</label><textarea id="details" rows="3" placeholder="Ej.: logo grande al centro, foto, frase, colores, etc."></textarea></div></div><div class="modal-info">💡 Después de realizar el pago podrás enviarnos tu logo, foto o diseño por WhatsApp. Para pedidos grandes, escribinos directamente.</div><div class="total">Total: $<span id="totalPrice">0</span></div><button class="btn" onclick="addToCart()">Agregar al carrito ♥</button></div></div>
 <script>
-let current={name:'',price:0,qty:1};
-const money=n=>Number(n).toLocaleString('es-UY');
-
-function openProduct(name,price,icon,description){
- current={name,price,qty:1};
- document.getElementById('productTitle').textContent=name;
- document.getElementById('productDescription').textContent=description;
- document.getElementById('productIcon').textContent=icon;
- document.getElementById('unitPrice').textContent=money(price);
- document.getElementById('qty').textContent=1;
- document.getElementById('sizeField').style.display=name.includes('Remera')?'block':'none';
- updateTotal();
- updateCartCount();
- document.getElementById('productModal').classList.add('show');
-}
-
-function closeProduct(){ 
-  document.getElementById('productModal').classList.remove('show');
-}
-
-function changeQty(n){
-  current.qty=Math.max(1,current.qty+n);
-  document.getElementById('qty').textContent=current.qty;
-  updateTotal();
-}
-
-function updateTotal(){ document.getElementById('totalPrice').textContent=money(current.price*current.qty); }
-
-function updateCartCount(){
-  const cart = JSON.parse(localStorage.getItem('bobyka_cart')) || [];
-  const count = cart.reduce((sum, item) => sum + item.qty, 0);
-  document.getElementById('cartCount').textContent = count;
-}
-
-function verCarrito(){
-  window.location.href = '/carrito';
-}
-
-function agregarAlCarrito(){
- const name=document.getElementById('customerName').value.trim();
- const email=document.getElementById('customerEmail').value.trim();
- const phone=document.getElementById('customerPhone').value.trim();
- const details=document.getElementById('details').value.trim();
- const size=document.getElementById('size').value;
- 
- if(!name||!email){
-   mostrarModalPersonalizada('Completá nombre y email ♥', 'error');
-   return;
- }
- 
- const item = {
-   id: Date.now(),
-   name: current.name,
-   price: current.price,
-   qty: current.qty,
-   customerName: name,
-   customerEmail: email,
-   customerPhone: phone,
-   size: current.name.includes('Remera') ? size : null,
-   details: details
- };
- 
- let cart = JSON.parse(localStorage.getItem('bobyka_cart')) || [];
- cart.push(item);
- localStorage.setItem('bobyka_cart', JSON.stringify(cart));
- 
- closeProduct();
- mostrarModalPersonalizada('✅ Producto agregado al carrito', 'success');
- updateCartCount();
- 
- // Limpiar formulario
- document.getElementById('customerName').value='';
- document.getElementById('customerEmail').value='';
- document.getElementById('customerPhone').value='';
- document.getElementById('details').value='';
- document.getElementById('size').value='S';
-}
-
-function mostrarModalPersonalizada(mensaje, tipo){
- const modal = document.createElement('div');
- modal.className = 'modal show';
- modal.style.zIndex = '2000';
- 
- const icono = tipo === 'error' ? '❌' : '✅';
- const bg = tipo === 'error' ? '#fee' : '#efe';
- 
- modal.innerHTML = `
-   <div class="modal-content" style="text-align:center;padding:2.5rem;background:${bg}">
-     <div style="font-size:4rem;margin-bottom:1rem">${icono}</div>
-     <p style="font-size:1.1rem;color:#333">${mensaje}</p>
-     <button class="btn" style="margin-top:1.5rem" onclick="this.closest('.modal').remove()">Aceptar</button>
-   </div>
- `;
- 
- document.body.appendChild(modal);
- modal.querySelector('.modal-content').addEventListener('click', function(e){
-   e.stopPropagation();
- });
-}
-
-// CARRUSEL GALERÍA
-let slideActual = 0;
-let autoPlayInterval = null;
-let estaPausado = false;
-const track = document.getElementById('carouselTrack');
-const slides = track ? track.querySelectorAll('.carousel-slide') : [];
-const totalSlides = slides.length;
-const dotsContainer = document.getElementById('carouselDots');
-const container = document.querySelector('.carousel-container');
-
-if (totalSlides > 0) {
-  // Crear los puntitos
-  slides.forEach((_, i) => {
-    const dot = document.createElement('button');
-    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-    dot.onclick = () => irASlide(i);
-    dotsContainer.appendChild(dot);
-  });
-
-  function actualizarCarrusel(){
-    if(track){
-      track.style.transform = `translateX(-${slideActual * 100}%)`;
-    }
-    document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
-      dot.classList.toggle('active', i === slideActual);
-    });
-  }
-
-  function moverCarrusel(direccion){
-    slideActual = (slideActual + direccion + totalSlides) % totalSlides;
-    actualizarCarrusel();
-  }
-
-  function irASlide(index){
-    slideActual = index;
-    actualizarCarrusel();
-  }
-
-  function iniciarAutoPlay(){
-    if(autoPlayInterval) clearInterval(autoPlayInterval);
-    if(!estaPausado){
-      autoPlayInterval = setInterval(() => {
-        slideActual = (slideActual + 1) % totalSlides;
-        actualizarCarrusel();
-      }, 4000);
-    }
-  }
-
-  function pausarAutoPlay(){
-    estaPausado = true;
-    if(autoPlayInterval){
-      clearInterval(autoPlayInterval);
-      autoPlayInterval = null;
-    }
-  }
-
-  function reanudarAutoPlay(){
-    estaPausado = false;
-    iniciarAutoPlay();
-  }
-
-  // Eventos del mouse - PAUSAR al pasar el mouse
-  if(container){
-    container.addEventListener('mouseenter', pausarAutoPlay);
-    container.addEventListener('mouseleave', reanudarAutoPlay);
-  }
-
-  // Iniciar autoplay
-  iniciarAutoPlay();
-}
-
-// Actualizar contador al cargar
-updateCartCount();
-
-window.onclick=e=>{if(e.target.classList.contains('modal'))e.target.remove()}
+const money=n=>Number(n||0).toLocaleString('es-UY');let current={name:'',price:0,qty:1};
+function toggleMenu(){document.getElementById('nav').classList.toggle('open')}
+function openProduct(name,price,icon,description){current={name,price,qty:1};productTitle.textContent=name;productDescription.textContent=description;productIcon.textContent=icon;unitPrice.textContent=money(price);qty.textContent='1';sizeField.style.display=name.includes('Remera')?'block':'none';updateTotal();modal.classList.add('show')}
+function closeProduct(){modal.classList.remove('show')}
+function changeQty(n){current.qty=Math.max(1,current.qty+n);qty.textContent=current.qty;updateTotal()}
+function updateTotal(){totalPrice.textContent=money(current.price*current.qty)}
+function updateCart(){const c=JSON.parse(localStorage.getItem('bobyka_cart')||'[]');cartCount.textContent=c.reduce((s,i)=>s+Number(i.qty||0),0)}
+function verCarrito(){location.href='/carrito'}
+function addToCart(){const name=customerName.value.trim(),email=customerEmail.value.trim();if(!name||!email){alert('Completá nombre y email para continuar ♥');return}const item={id:Date.now(),name:current.name,price:current.price,qty:current.qty,customerName:name,customerEmail:email,customerPhone:customerPhone.value.trim(),size:current.name.includes('Remera')?size.value:null,details:details.value.trim()};const c=JSON.parse(localStorage.getItem('bobyka_cart')||'[]');c.push(item);localStorage.setItem('bobyka_cart',JSON.stringify(c));closeProduct();updateCart();alert('Producto agregado al carrito ♥');[customerName,customerEmail,customerPhone,details].forEach(x=>x.value='');}
+const track=document.getElementById('track'),slides=[...track.querySelectorAll('.slide')],dots=document.getElementById('dots');let slide=0;slides.forEach((_,i)=>{const d=document.createElement('button');d.className='dot'+(i===0?' active':'');d.onclick=()=>go(i);dots.appendChild(d)});function go(i){slide=(i+slides.length)%slides.length;track.style.transform=`translateX(-${slide*100}%)`;[...dots.children].forEach((d,j)=>d.classList.toggle('active',j===slide))}function move(n){go(slide+n)}let autoplay=setInterval(()=>move(1),4500);document.querySelector('.carousel').addEventListener('mouseenter',()=>clearInterval(autoplay));document.querySelector('.carousel').addEventListener('mouseleave',()=>autoplay=setInterval(()=>move(1),4500));
+document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>{const item=q.parentElement;item.classList.toggle('open');q.querySelector('span').textContent=item.classList.contains('open')?'−':'+'}));
+modal.addEventListener('click',e=>{if(e.target===modal)closeProduct()});updateCart();
 </script>
-</body>
-</html>
+</body></html>
