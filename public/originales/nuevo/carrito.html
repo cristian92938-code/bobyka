@@ -31,22 +31,13 @@ nav a{color:#1a1a1a;text-decoration:none;margin-left:2rem;font-weight:500}
 .total-amount{font-size:2.5rem;font-weight:700;color:#d4a0a0}
 
 .bank-data{background:#fdf5f2;border:2px solid #d4a0a0;border-radius:15px;padding:1.5rem;margin:1rem 0}
-.bank-row{display:flex;justify-content:space-between;align-items:center;margin:0.6rem 0;padding:0.3rem 0}
-.bank-label{font-weight:600;color:#555;font-size:0.95rem}
+.bank-row{display:flex;justify-content:space-between;align-items:center;margin:0.8rem 0;padding:0.5rem 0;border-bottom:1px dashed #e8c4c4}
+.bank-row:last-child{border-bottom:none}
+.bank-label{font-weight:600;color:#555}
 .bank-value{font-weight:700;color:#1a1a1a;font-family:monospace;font-size:1.05rem}
 .copy-btn{background:#d4a0a0;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;font-size:0.85rem;transition:0.3s;margin-left:0.5rem}
 .copy-btn:hover{background:#1a1a1a;transform:translateY(-2px)}
 .copy-btn.copied{background:#25D366}
-
-.divider{border-top:2px dashed #e8c4c4;margin:1.2rem 0}
-
-/* BANCOS CON LOGOS */
-.banks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin:1.5rem 0}
-.bank-card{background:#fff;border:2px solid #e8c4c4;border-radius:15px;padding:1.2rem;text-align:center;cursor:pointer;transition:0.3s;text-decoration:none;color:#1a1a1a;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.bank-card:hover{border-color:#d4a0a0;transform:translateY(-4px);box-shadow:0 6px 15px rgba(212,160,160,.3)}
-.bank-card-logo{width:60px;height:60px;object-fit:contain;margin-bottom:0.8rem;display:block}
-.bank-card-name{font-weight:700;font-size:0.95rem;margin-bottom:0.2rem}
-.bank-card-sub{font-size:0.75rem;color:#777}
 
 .instructions{background:#fff3cd;border:2px solid #ffc107;border-radius:12px;padding:1.2rem;margin:1.5rem 0}
 .instructions h4{color:#856404;margin-bottom:0.8rem}
@@ -66,8 +57,6 @@ nav a{color:#1a1a1a;text-decoration:none;margin-left:2rem;font-weight:500}
 .confirmation-box label{display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:600;color:#1a1a1a}
 .confirmation-box input[type="checkbox"]{width:20px;height:20px;accent-color:#4caf50}
 
-.return-notice{background:#e3f2fd;border:2px solid #2196f3;border-radius:12px;padding:1rem;margin-top:1.5rem;text-align:center;color:#0d47a1;font-weight:600;font-size:0.95rem}
-
 .empty-cart{text-align:center;padding:3rem;color:#777}
 .empty-cart-icon{font-size:4rem;margin-bottom:1rem}
 
@@ -85,11 +74,9 @@ footer{background:#1a1a1a;color:#fff;text-align:center;padding:2rem;margin-top:3
     .page-title{font-size:1.8rem}
     .cart-section,.payment-section{padding:1.5rem}
     .total-amount{font-size:2rem}
-    .bank-row{flex-direction:column;align-items:flex-start;gap:0.3rem}
-    .copy-btn{margin-left:0;margin-top:0.3rem;width:100%}
+    .bank-row{flex-direction:column;align-items:flex-start}
+    .copy-btn{margin-left:0;margin-top:0.5rem}
     .whatsapp-float{bottom:20px;right:20px;width:50px;height:50px}
-    .banks-grid{grid-template-columns:repeat(2,1fr)}
-    .bank-card-logo{width:50px;height:50px}
 }
 </style>
 </head>
@@ -107,113 +94,45 @@ footer{background:#1a1a1a;color:#fff;text-align:center;padding:2rem;margin-top:3
 <div class="container">
   <h1 class="page-title">Tu Carrito ♥</h1>
   
-  <div id="cartContent"></div>
+  <div id="cartContent">
+    <!-- Los items del carrito se cargan con JavaScript -->
+  </div>
   
   <div class="payment-section" id="paymentSection" style="display:none">
-    <h2 class="section-title">💳 Cómo pagar</h2>
+    <h2 class="section-title">💳 Datos para Transferencia</h2>
     
     <div class="instructions">
       <h4>📋 Pasos para completar tu pedido:</h4>
       <ol>
-        <li>Elegí tu banco de la lista y hacé la transferencia a una de nuestras cuentas</li>
-        <li>Guardá el comprobante de pago (captura de pantalla o PDF)</li>
-        <li>Volvé a esta página y marcá la casilla de confirmación</li>
-        <li>Hacé clic en "Enviar comprobante por WhatsApp" y adjuntá la imagen</li>
+        <li>Realizá la transferencia bancaria con los datos de abajo</li>
+        <li>Guardá el comprobante de pago</li>
+        <li>Marcá la casilla de confirmación</li>
+        <li>Hacé clic en "Enviar comprobante por WhatsApp"</li>
+        <li>Adjuntá el comprobante y listo</li>
       </ol>
     </div>
-
-    <!-- SECCIÓN DE BANCOS CON LOGOS -->
-    <h3 style="font-family:Pacifico,cursive;font-size:1.3rem;margin-bottom:1rem;color:#1a1a1a"> Elegí tu banco para entrar:</h3>
-    <div class="banks-grid">
-      <a href="https://ebanking.brou.com.uy/frontend/loginStep1" target="_blank" class="bank-card">
-        <img src="logos/brou.png" alt="BROU" class="bank-card-logo">
-        <div class="bank-card-name">BROU</div>
-        <div class="bank-card-sub">Banco República</div>
-      </a>
-      <a href="https://www.santander.com.uy/" target="_blank" class="bank-card">
-        <img src="logos/santander.png" alt="Santander" class="bank-card-logo">
-        <div class="bank-card-name">Santander</div>
-        <div class="bank-card-sub">Home Banking</div>
-      </a>
-      <a href="https://www.itau.com.uy/" target="_blank" class="bank-card">
-        <img src="logos/itau.png" alt="Itaú" class="bank-card-logo">
-        <div class="bank-card-name">Itaú</div>
-        <div class="bank-card-sub">Banca por Internet</div>
-      </a>
-      <a href="https://www1.scotiabank.com.uy/scotiaenlinea/" target="_blank" class="bank-card">
-        <img src="logos/scotiabank.png" alt="Scotiabank" class="bank-card-logo">
-        <div class="bank-card-name">Scotiabank</div>
-        <div class="bank-card-sub">Online Banking</div>
-      </a>
-      <a href="https://www.prexcard.com/login" target="_blank" class="bank-card">
-        <img src="logos/prex.png" alt="Prex" class="bank-card-logo">
-        <div class="bank-card-name">Prex</div>
-        <div class="bank-card-sub">App / Web</div>
-      </a>
-      <a href="https://www.bandes.com.uy/client/home" target="_blank" class="bank-card">
-        <img src="logos/bandes.png" alt="Bandes" class="bank-card-logo">
-        <div class="bank-card-name">Bandes</div>
-        <div class="bank-card-sub">Banca Online</div>
-      </a>
-      <a href="https://micuentanuevo.oca.com.uy/trx/login" target="_blank" class="bank-card">
-        <img src="logos/oca.png" alt="OCA Blue" class="bank-card-logo">
-        <div class="bank-card-name">OCA Blue</div>
-        <div class="bank-card-sub">Cuenta destino</div>
-      </a>
-      <a href="https://bbvanet.bbva.com.uy/NetApp/Home/Index" target="_blank" class="bank-card">
-        <img src="logos/bbva.png" alt="BBVA" class="bank-card-logo">
-        <div class="bank-card-name">BBVA</div>
-        <div class="bank-card-sub">Cuenta NetApp</div>
-      </a>
-    </div>
-
-    <!-- DATOS DE TRANSFERENCIA -->
-    <h3 style="font-family:Pacifico,cursive;font-size:1.3rem;margin:1.5rem 0 1rem;color:#1a1a1a">📋 Nuestras cuentas para recibir el pago:</h3>
+    
     <div class="bank-data">
-      
-      <!-- OCA BLUE -->
       <div class="bank-row">
-        <span class="bank-label">🏦 OCA Blue</span>
-        <span class="bank-value">Titular: Alba Magallanes</span>
+        <span class="bank-label"> Banco:</span>
+        <span class="bank-value">OCA Blue</span>
       </div>
       <div class="bank-row">
-        <span class="bank-label">N° Cuenta:</span>
+        <span class="bank-label"> N° Cuenta:</span>
         <span class="bank-value">9814324</span>
         <button class="copy-btn" onclick="copiarAlPortapapeles('9814324', this)">Copiar</button>
       </div>
-      
-      <div class="divider"></div>
-
-      <!-- PREX -->
       <div class="bank-row">
-        <span class="bank-label">💳 Prex</span>
-        <span class="bank-value">Titular: Cristian Martinez</span>
+        <span class="bank-label"> Alias:</span>
+        <span class="bank-value">bobyka.ventas</span>
+        <button class="copy-btn" onclick="copiarAlPortapapeles('bobyka.ventas', this)">Copiar</button>
       </div>
       <div class="bank-row">
-        <span class="bank-label">N° Cuenta:</span>
-        <span class="bank-value">32892</span>
-        <button class="copy-btn" onclick="copiarAlPortapapeles('32892', this)">Copiar</button>
+        <span class="bank-label">👤 Titular:</span>
+        <span class="bank-value">Bobyka</span>
       </div>
-
-      <div class="divider"></div>
-
-      <!-- BBVA -->
-      <div class="bank-row">
-        <span class="bank-label"> BBVA</span>
-        <span class="bank-value">Titular: Cristian Martinez</span>
-      </div>
-      <div class="bank-row">
-        <span class="bank-label">N° Cuenta:</span>
-        <span class="bank-value">26284243</span>
-        <button class="copy-btn" onclick="copiarAlPortapapeles('26284243', this)">Copiar</button>
-      </div>
-
     </div>
     
-    <div class="return-notice">
-      ⚠️ Luego de realizar tu pago, volvé a esta pestaña para enviar el comprobante.
-    </div>
-
     <div class="total-box">
       <div class="total-label">Total a Transferir:</div>
       <div class="total-amount">$<span id="transferTotal">0</span></div>
@@ -264,7 +183,7 @@ function renderCart(){
     container.innerHTML = `
       <div class="cart-section">
         <div class="empty-cart">
-          <div class="empty-cart-icon"></div>
+          <div class="empty-cart-icon">🛒</div>
           <h3 style="font-family:Pacifico,cursive;font-size:1.8rem;margin-bottom:1rem">Tu carrito está vacío</h3>
           <p style="color:#777;margin-bottom:1.5rem">¡Agregá productos para comenzar!</p>
           <a href="/" class="btn">Ir a Comprar ♥</a>
@@ -298,7 +217,7 @@ function renderCart(){
   
   container.innerHTML = `
     <div class="cart-section">
-      <h2 class="section-title">🛍️ Productos Seleccionados</h2>
+      <h2 class="section-title"> Productos Seleccionados</h2>
       ${itemsHTML}
       <div class="total-box">
         <div class="total-label">Total del Pedido:</div>
@@ -354,7 +273,10 @@ function irAWhatsApp(){
   });
   
   waMessage += `%0A*💰 TOTAL: $${money(total)}*%0A`;
-  waMessage += `%0A*💳 PAGO POR TRANSFERENCIA BANCARIA*%0A`;
+  waMessage += `%0A*🏦 PAGO POR TRANSFERENCIA*%0A`;
+  waMessage += `Alias: bobyka.ventas%0A`;
+  waMessage += `N° Cuenta: 9814324%0A`;
+  waMessage += `Banco: OCA Blue%0A`;
   waMessage += `%0A✅ *Ya realicé la transferencia*%0A`;
   waMessage += `📎 *Adjunto comprobante de pago*`;
   
