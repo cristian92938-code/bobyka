@@ -377,7 +377,7 @@ async function irAWhatsApp(){
 
   try {
     const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const firstItem = cart[0]; // Tomamos los datos del cliente del primer item del carrito
+    const firstItem = cart[0]; 
 
     // 1. Enviar datos al servidor para guardar en la base de datos
     const response = await fetch('/api/guardar-pedido-carrito', {
@@ -397,21 +397,25 @@ async function irAWhatsApp(){
       throw new Error(data.error || 'Error al registrar el pedido en el sistema');
     }
 
-    // 2. Armar mensaje de WhatsApp
+    // 2. Armar mensaje de WhatsApp (¡AHORA INCLUYE LOS DATOS BANCARIOS!)
     let waMessage = `*HOLA BOBYKA! ♥ QUIERO CONFIRMAR MI PEDIDO*%0A%0A`;
     waMessage += `*📦 PRODUCTOS:*%0A`;
     
     cart.forEach((item, index) => {
       const itemTotal = item.price * item.qty;
       waMessage += `%0A${index + 1}. *${item.name}* x${item.qty}%0A`;
-      waMessage += `   Precio: $${money(item.price)} c/u%0A`;
       waMessage += `   Subtotal: $${money(itemTotal)}%0A`;
       if(item.size) waMessage += `   Talle: ${item.size}%0A`;
-      if(item.details) waMessage += `   Detalles: ${item.details}%0A`;
     });
     
-    waMessage += `%0A*💰 TOTAL: $${money(total)}*%0A`;
-    waMessage += `%0A*💳 PAGO POR TRANSFERENCIA BANCARIA*%0A`;
+    waMessage += `%0A*💰 TOTAL A PAGAR: $${money(total)}*%0A`;
+    
+    // AGREGAMOS LOS DATOS BANCARIOS AL MENSAJE PARA QUE EL CLIENTE LOS TENGA A MANO
+    waMessage += `%0A*💳 DATOS PARA TRANSFERIR:*%0A`;
+    waMessage += `🏦 *OCA Blue:* 9814324 (Alba Magallanes)%0A`;
+    waMessage += `💳 *Prex:* 32892 (Cristian Martinez)%0A`;
+    waMessage += `🏦 *BBVA:* 26284243 (Cristian Martinez)%0A`;
+    
     waMessage += `%0A✅ *Ya realicé la transferencia*%0A`;
     waMessage += `📎 *Adjunto comprobante de pago*`;
     
@@ -423,7 +427,7 @@ async function irAWhatsApp(){
     cart = [];
     renderCart();
     
-    alert('✅ Pedido registrado en el sistema. Se abrió WhatsApp para que adjuntes el comprobante.');
+    alert('✅ Pedido registrado. Se abrió WhatsApp con los datos de pago. ¡Solo adjunta el comprobante!');
     
   } catch (error) {
     alert('Error: ' + error.message);
