@@ -126,42 +126,42 @@ footer{background:#1a1a1a;color:#fff;text-align:center;padding:2rem;margin-top:3
     <h3 style="font-family:Pacifico,cursive;font-size:1.3rem;margin-bottom:1rem;color:#1a1a1a"> Elegí tu banco para entrar:</h3>
     <div class="banks-grid">
       <a href="https://ebanking.brou.com.uy/frontend/loginStep1" target="_blank" class="bank-card">
-        <img src="logos/brou.png" alt="BROU" class="bank-card-logo">
+        <img src="/logos/brou.png" alt="BROU" class="bank-card-logo">
         <div class="bank-card-name">BROU</div>
         <div class="bank-card-sub">Banco República</div>
       </a>
       <a href="https://www.santander.com.uy/" target="_blank" class="bank-card">
-        <img src="logos/santander.png" alt="Santander" class="bank-card-logo">
+        <img src="/logos/santander.png" alt="Santander" class="bank-card-logo">
         <div class="bank-card-name">Santander</div>
         <div class="bank-card-sub">Home Banking</div>
       </a>
       <a href="https://www.itau.com.uy/" target="_blank" class="bank-card">
-        <img src="logos/itau.png" alt="Itaú" class="bank-card-logo">
+        <img src="/logos/itau.png" alt="Itaú" class="bank-card-logo">
         <div class="bank-card-name">Itaú</div>
         <div class="bank-card-sub">Banca por Internet</div>
       </a>
       <a href="https://www1.scotiabank.com.uy/scotiaenlinea/" target="_blank" class="bank-card">
-        <img src="logos/scotiabank.png" alt="Scotiabank" class="bank-card-logo">
+        <img src="/logos/scotiabank.png" alt="Scotiabank" class="bank-card-logo">
         <div class="bank-card-name">Scotiabank</div>
         <div class="bank-card-sub">Online Banking</div>
       </a>
       <a href="https://www.prexcard.com/login" target="_blank" class="bank-card">
-        <img src="logos/prex.png" alt="Prex" class="bank-card-logo">
+        <img src="/logos/prex.png" alt="Prex" class="bank-card-logo">
         <div class="bank-card-name">Prex</div>
         <div class="bank-card-sub">App / Web</div>
       </a>
       <a href="https://www.bandes.com.uy/client/home" target="_blank" class="bank-card">
-        <img src="logos/bandes.png" alt="Bandes" class="bank-card-logo">
+        <img src="/logos/bandes.png" alt="Bandes" class="bank-card-logo">
         <div class="bank-card-name">Bandes</div>
         <div class="bank-card-sub">Banca Online</div>
       </a>
       <a href="https://micuentanuevo.oca.com.uy/trx/login" target="_blank" class="bank-card">
-        <img src="logos/oca.png" alt="OCA Blue" class="bank-card-logo">
+        <img src="/logos/oca.png" alt="OCA Blue" class="bank-card-logo">
         <div class="bank-card-name">OCA Blue</div>
         <div class="bank-card-sub">Cuenta destino</div>
       </a>
       <a href="https://bbvanet.bbva.com.uy/NetApp/Home/Index" target="_blank" class="bank-card">
-        <img src="logos/bbva.png" alt="BBVA" class="bank-card-logo">
+        <img src="/logos/bbva.png" alt="BBVA" class="bank-card-logo">
         <div class="bank-card-name">BBVA</div>
         <div class="bank-card-sub">Cuenta NetApp</div>
       </a>
@@ -245,8 +245,8 @@ footer{background:#1a1a1a;color:#fff;text-align:center;padding:2rem;margin-top:3
 
 <footer id="contacto">
   Bobyka © 2026 | Hecho con <span class="heart">♥</span> en Uruguay<br>
-  <a href="terminos.html" style="color:#d4a0a0;text-decoration:none;margin:0 10px">Términos y Condiciones</a> | 
-  <a href="privacidad.html" style="color:#d4a0a0;text-decoration:none;margin:0 10px">Política de Privacidad</a>
+  <a href="/terminos.html" style="color:#d4a0a0;text-decoration:none;margin:0 10px">Términos y Condiciones</a> | 
+  <a href="/privacidad.html" style="color:#d4a0a0;text-decoration:none;margin:0 10px">Política de Privacidad</a>
 </footer>
 
 <script>
@@ -297,19 +297,31 @@ function renderCart(){
   });
   
   container.innerHTML = `
-    <div class="cart-section">
-      <h2 class="section-title">🛍️ Productos Seleccionados</h2>
-      ${itemsHTML}
-      <div class="total-box">
-        <div class="total-label">Total del Pedido:</div>
-        <div class="total-amount">$${money(total)}</div>
-      </div>
-    </div>
+   <div class="cart-section">
+  <h2 class="section-title">🛍️ Productos Seleccionados</h2>
+  ${itemsHTML}
+  <div class="total-box">
+    <div class="total-label">Total del Pedido:</div>
+    <div class="total-amount">$${money(total)}</div>
+  </div>
+  <button class="btn" style="background:#ff4444;margin-top:1rem" onclick="vaciarCarrito()">
+    ️ Vaciar Carrito
+  </button>
+</div>
   `;
   
   paymentSection.style.display = 'block';
   confirmationBox.classList.add('show');
   document.getElementById('transferTotal').textContent = money(total);
+}
+
+function vaciarCarrito(){
+  if(confirm('¿Seguro que querés vaciar el carrito? Se borrarán todos los productos.')){
+    localStorage.removeItem('bobyka_cart');
+    cart = [];
+    renderCart();
+    alert('🗑️ Carrito vaciado');
+  }
 }
 
 function copiarAlPortapapeles(texto, btn){
@@ -363,6 +375,12 @@ function irAWhatsApp(){
   setTimeout(() => {
     alert('✅ Se abrió WhatsApp. Adjuntá el comprobante de transferencia y enviá el mensaje.');
   }, 1000);
+
+  setTimeout(() => {
+  alert('✅ Se abrió WhatsApp. Adjuntá el comprobante de transferencia y enviá el mensaje.');
+  localStorage.removeItem('bobyka_cart');
+  cart = [];
+}, 1000);
 }
 
 renderCart();
