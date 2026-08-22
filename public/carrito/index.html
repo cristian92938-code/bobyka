@@ -59,6 +59,7 @@ nav a{color:#1a1a1a;text-decoration:none;margin-left:2rem;font-weight:500}
 .btn-wa:hover{background:#128C7E}
 .btn-secondary{background:#ccc;color:#333}
 .btn-secondary:hover{background:#999}
+.btn:disabled{background:#999;cursor:not-allowed;transform:none}
 
 .confirmation-box{background:#e8f5e9;border:2px solid #4caf50;border-radius:12px;padding:1.2rem;margin:1.5rem 0;display:none}
 .confirmation-box.show{display:block}
@@ -281,7 +282,7 @@ function renderCart(){
     container.innerHTML = `
       <div class="cart-section">
         <div class="empty-cart">
-          <div class="empty-cart-icon"></div>
+          <div class="empty-cart-icon">🛒</div>
           <h3 style="font-family:Pacifico,cursive;font-size:1.8rem;margin-bottom:1rem">Tu carrito está vacío</h3>
           <p style="color:#777;margin-bottom:1.5rem">¡Agregá productos para comenzar!</p>
           <a href="/" class="btn">Ir a Comprar ♥</a>
@@ -322,7 +323,7 @@ function renderCart(){
     <div class="total-amount">$${money(total)}</div>
   </div>
   <button class="btn" style="background:#ff4444;margin-top:1rem" onclick="vaciarCarrito()">
-    ️ Vaciar Carrito
+    🗑️ Vaciar Carrito
   </button>
 </div>
   `;
@@ -355,7 +356,7 @@ function copiarAlPortapapeles(texto, btn){
   });
 }
 
-function irAWhatsApp(){
+async function irAWhatsApp(){
   const confirmCheckbox = document.getElementById('confirmPayment');
   
   if(!confirmCheckbox.checked){
@@ -367,36 +368,70 @@ function irAWhatsApp(){
     alert('El carrito está vacío');
     return;
   }
-  
-  const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  
-  let waMessage = `*HOLA BOBYKA! ♥ QUIERO CONFIRMAR MI PEDIDO*%0A%0A`;
-  waMessage += `*📦 PRODUCTOS:*%0A`;
-  
-  cart.forEach((item, index) => {
-    const itemTotal = item.price * item.qty;
-    waMessage += `%0A${index + 1}. *${item.name}* x${item.qty}%0A`;
-    waMessage += `   Precio: $${money(item.price)} c/u%0A`;
-    waMessage += `   Subtotal: $${money(itemTotal)}%0A`;
-    if(item.size) waMessage += `   Talle: ${item.size}%0A`;
-    if(item.details) waMessage += `   Detalles: ${item.details}%0A`;
-  });
-  
-  waMessage += `%0A*💰 TOTAL: $${money(total)}*%0A`;
-  waMessage += `%0A*💳 PAGO POR TRANSFERENCIA BANCARIA*%0A`;
-  waMessage += `%0A✅ *Ya realicé la transferencia*%0A`;
-  waMessage += `📎 *Adjunto comprobante de pago*`;
-  
-  window.open(`https://wa.me/${NUMERO_PEDIDOS}?text=${waMessage}`, '_blank');
-  
-  setTimeout(() => {
-    alert('✅ Se abrió WhatsApp. Adjuntá el comprobante de transferencia y enviá el mensaje.');
-  }, 1000);
 
-  setTimeout(() => {
+  // Mostrar estado de carga en el botón
+  const btn = document.getElementById('btnWhatsApp');
+  const originalText = btn.textContent;
+  btn.textContent = '⏳ Registrando pedido...';
+  btn.disabled = true;
+
+  try {
+    const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const firstItem = cart[0]; // Tomamos los datos del cliente del primer item del carrito
+
+    // 1. Enviar datos al servidor para guardar en la base de datos
+    const response = await fetch('/api/guardar-pedido-carrito', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: cart,
+        customerName: firstItem.customerName,
+        customerEmail: firstItem.customerEmail,
+        customerPhone: firstItem.customerPhone,
+        details: firstItem.details
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || 'Error al registrar el pedido en el sistema');
+    }
+
+    // 2. Armar mensaje de WhatsApp
+    let waMessage = `*HOLA BOBYKA! ♥ QUIERO CONFIRMAR MI PEDIDO*%0A%0A`;
+    waMessage += `*📦 PRODUCTOS:*%0A`;
+    
+    cart.forEach((item, index) => {
+      const itemTotal = item.price * item.qty;
+      waMessage += `%0A${index + 1}. *${item.name}* x${item.qty}%0A`;
+      waMessage += `   Precio: $${money(item.price)} c/u%0A`;
+      waMessage += `   Subtotal: $${money(itemTotal)}%0A`;
+      if(item.size) waMessage += `   Talle: ${item.size}%0A`;
+      if(item.details) waMessage += `   Detalles: ${item.details}%0A`;
+    });
+    
+    waMessage += `%0A*💰 TOTAL: $${money(total)}*%0A`;
+    waMessage += `%0A*💳 PAGO POR TRANSFERENCIA BANCARIA*%0A`;
+    waMessage += `%0A✅ *Ya realicé la transferencia*%0A`;
+    waMessage += `📎 *Adjunto comprobante de pago*`;
+    
+    // 3. Abrir WhatsApp
+    window.open(`https://wa.me/${NUMERO_PEDIDOS}?text=${waMessage}`, '_blank');
+    
+    // 4. Vaciar carrito y renderizar de nuevo
     localStorage.removeItem('bobyka_cart');
     cart = [];
-  }, 1200);
+    renderCart();
+    
+    alert('✅ Pedido registrado en el sistema. Se abrió WhatsApp para que adjuntes el comprobante.');
+    
+  } catch (error) {
+    alert('Error: ' + error.message);
+  } finally {
+    // Restaurar el botón a su estado original
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
 }
 
 renderCart();

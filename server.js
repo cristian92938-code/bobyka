@@ -80,6 +80,9 @@ function normalizeStatus(s) {
   return ["pendiente","recibido","en_produccion","listo","entregado","cancelado"].includes(s) ? s : null;
 }
 
+// ==========================================
+// RUTA ORIGINAL: Con subida de archivo
+// ==========================================
 app.post("/api/orders", upload.single("design"), async (req,res) => {
   try {
     const {product,quantity,name,email,phone,size,details}=req.body;
@@ -156,8 +159,66 @@ app.post("/api/orders", upload.single("design"), async (req,res) => {
   }
 });
 
-// Webhook de pagos: valida firma si MP_WEBHOOK_SECRET está configurado,
-// consulta el pago directamente en Mercado Pago y recién entonces actualiza el pedido.
+// ==========================================
+// NUEVA RUTA: Guardar pedido del carrito en la BD (sin archivo)
+// ==========================================
+app.post("/api/guardar-pedido-carrito", async (req, res) => {
+  try {
+    const { items, customerName, customerEmail, customerPhone, details } = req.body;
+    
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: "El carrito está vacío o es inválido." });
+    }
+    if (!customerName?.trim() || !customerEmail?.trim()) {
+      return res.status(400).json({ error: "Faltan datos obligatorios (nombre y email)." });
+    }
+
+    const orderId = crypto.randomUUID();
+    let total = 0;
+    
+    // Creamos un resumen de los productos para guardarlo en la columna 'producto'
+    const productosResumen = items.map(item => {
+      total += (Number(item.price) || 0) * (Number(item.qty) || 1);
+      return `${item.name} x${item.qty}`;
+    }).join(", ");
+
+    const cantidadTotal = items.reduce((sum, item) => sum + (Number(item.qty) || 1), 0);
+    
+    // Buscamos si hay algún talle en los items (para remeras)
+    const talle = items.find(i => i.size)?.size || null;
+    const detallesCombinados = details ? details : "Pedido desde carrito web";
+
+    // Guardamos en Supabase usando la service_role_key (ignora políticas RLS)
+    const { error: dbError } = await supabase.from("pedidos").insert({
+      id: orderId,
+      producto: productosResumen,
+      cantidad: cantidadTotal,
+      precio_unitario: 0, 
+      total: total,
+      nombre: customerName.trim(),
+      email: customerEmail.trim().toLowerCase(),
+      telefono: customerPhone?.trim() || null,
+      talle: talle,
+      detalles: detallesCombinados,
+      estado_pago: "pendiente",
+      estado_pedido: "pendiente"
+    });
+
+    if (dbError) {
+      console.error("Error guardando pedido del carrito:", dbError);
+      return res.status(500).json({ error: "No se pudo guardar el pedido en la base de datos" });
+    }
+
+    res.json({ success: true, orderId });
+  } catch (e) {
+    console.error("Error en /api/guardar-pedido-carrito:", e);
+    res.status(500).json({ error: e.message || "Error interno del servidor" });
+  }
+});
+
+// ==========================================
+// Webhook de pagos
+// ==========================================
 app.post("/api/mercadopago/webhook", async (req,res) => {
   try {
     const dataId=String(req.query["data.id"] || req.body?.data?.id || "");
@@ -214,7 +275,9 @@ app.post("/api/mercadopago/webhook", async (req,res) => {
   }
 });
 
+// ==========================================
 // Admin
+// ==========================================
 app.post("/api/admin/login",(req,res)=>{
   const {user,pass}=req.body||{};
   if(user===process.env.ADMIN_USER && pass===process.env.ADMIN_PASSWORD) {
